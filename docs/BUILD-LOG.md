@@ -336,8 +336,13 @@ penguin-ish, and in the spirit of 90s handheld games.
 - The speaker is muted between words so there is no hiss. Volume is one number at the top of `Pengu.ino`
   (`VOICE_VOLUME`, 45 of 100).
 
-- Also in this build: every drawing is shrunk a little inside its 200 by 150 box (12 pixels of air on each side), because
-  M's photo showed the happy penguin's flippers cut off at the screen edge. Nothing touches the edge now.
+- The cut-off flippers: M's photo showed the happy penguin's arms chopped at the screen edge. Shrinking the drawings did
+  not help, because the cut was in the drawing itself: the first crops from the sheet were too tight. So all 23 faces
+  were cut again from the full sheet (`artwork/originals/penguin_emotions_sheet.jpg`) with room for the flippers, using
+  `tools/crop_sheet.py` and the boxes in `tools/crop_boxes.txt`, so it can be redone in one command. Whole penguins now.
+- Silent speaker, first flash: the codec's volume scale is steep (50 means -25 dB, 45 was nearly nothing on a tiny
+  speaker). Volume is now 85, the clips are louder, Pengu plays its listening blip once at boot so you can tell straight
+  away whether the speaker works, and it prints what the speaker reports over USB for the next round of debugging.
 
 **Did it work:** compiles; a PC check lists which of the 226 lines get a sound (42 do, each with the right word) and the
 longest clip (1.2 s). Measured every clip: peaks between -13 and -15 dB, nothing clipped. The speaker has never been used

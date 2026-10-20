@@ -58,7 +58,7 @@
 #define BLINK_EVERY_MS      25000    // how often Pengu blinks while resting
 #define SLEEP_AFTER_MS      600000   // falls asleep after 10 quiet minutes
 #define PULSE_MS            500      // the "(((" ear mark pulses while Pengu listens
-#define VOICE_VOLUME        45       // how loud the little penguin words are (0 = silent, 100 = loud)
+#define VOICE_VOLUME        85       // how loud the little penguin words are (0 = silent, 100 = loud). The codec is quiet below 70.
 
 // ---------------------------------------------------------------- display
 static epaper_driver_display *epd = nullptr;
@@ -348,6 +348,7 @@ void setup()
 
   build_phrases();
   audio_bsp_init();
+  say("LISTEN");                                // a little hello blip at boot: if you hear this, the speaker works
   esp_err_t err = sr_start(mic_fill, nullptr, SR_CHANNELS_MONO, SR_MODE_COMMAND, "M",
                            all_phrases, phrase_count, on_voice_event, nullptr);
   if (err != ESP_OK) {

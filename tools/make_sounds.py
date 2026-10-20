@@ -26,7 +26,7 @@ WORDS = { "oh": "Oh!", "big": "Big!", "yay": "Yay!", "woo": "Woo!", "hmm": "Hmm.
           "ooh": "Ooh!", "eww": "Eww!", "night": "Night night.", "hello": "Hello!", "okay": "Okay!", "yes": "Yes?", "sorry": "Sorry." }
 PITCH = 1.3        # higher = smaller penguin (1.0 = the voice as it is). Pitch only: the words do not get faster
 TEMPO = 0.85       # lower = slower, gentler words
-VOLUME_DB = -12    # quiet and friendly
+VOLUME_DB = -6     # the clips themselves are fairly loud; VOICE_VOLUME in Pengu.ino sets how loud the speaker is
 BITS = 8           # 8-bit era texture, mixed in lightly so it stays soft (fewer bits = crunchier)
 CRUNCH = 0.3       # how much of the 8-bit texture to mix in (0 = clean voice, 1 = full crunch)
 RATE = 16000

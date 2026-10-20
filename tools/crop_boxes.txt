@@ -1,0 +1,24 @@
+# crop boxes (left, top, right, bottom) on artwork/originals/penguin_emotions_sheet.jpg, used by tools/crop_sheet.py
+happy 110 108 300 243
+confused 300 95 455 243
+excited 455 95 620 250
+angry 630 100 790 243
+scared 795 95 930 243
+grumpy 940 70 1090 243
+grateful 1090 100 1225 243
+proud 1225 95 1400 243
+sad 140 305 290 445
+surprised 300 300 460 440
+sleepy 470 300 640 445
+curious 640 305 800 458
+confident 805 305 960 462
+peaceful 960 305 1085 462
+mischievous 1090 300 1240 462
+thoughtful 1240 300 1400 458
+thoughtful2 90 525 230 680
+relief 335 525 490 680
+shocked 640 525 800 680
+disgusted 805 535 955 680
+nervous 960 540 1095 680
+tired 1100 525 1250 680
+shy 1250 525 1400 680

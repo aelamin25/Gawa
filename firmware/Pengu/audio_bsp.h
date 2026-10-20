@@ -15,7 +15,13 @@ void audio_bsp_init(void);
 int audio_mic_read(void *buf, size_t len);
 
 // Plays a short 16 kHz 16-bit mono clip on the speaker (blocks until done), at 0..100 volume.
-void audio_play(const int16_t *mono, size_t n, int volume);
+// Returns 0 when every write went through, otherwise the first error code from the codec (negative) or the number of failed writes.
+int audio_play(const int16_t *mono, size_t n, int volume);
+
+// Lower level, used by speech.h: set the speaker volume (0..100, only re-sent when it changes) and write
+// 16 kHz 16-bit STEREO interleaved samples (n = number of int16 values). Returns 0 on success.
+void audio_volume(int volume);
+int  audio_write(const int16_t *stereo, size_t n);
 
 #ifdef __cplusplus
 }

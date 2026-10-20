@@ -1,10 +1,11 @@
 # Releases
 
 Ready made files to load onto the board. Always use the newest one. Steps are in the main README.
+`speech.bin` is the spoken lines on their own (already inside the full file); you only need it if you upload from Arduino IDE, then flash it at `0x620000`.
 
 | File | What it does |
 |---|---|
-| `Pengu_v13_full_8MB.bin` | **Newest.** Words you can hear through the little speaker, the gear button listens the moment you press it. |
+| `Pengu_v13_full_8MB.bin` | **Newest.** Pengu says every line it shows (292 recorded lines in `speech.bin`, packed inside this file). New flash map: always Erase Flash first. Gear listens the moment you press. |
 | `Pengu_v12_full_8MB.bin` | Pengu asks back ("WANT A HUG?", "REST WITH ME?", "CELEBRATE?", "TELL ME MORE?") and understands yes and no. Power button restarts it. |
 | `PENGUFILE_v11_full_8MB.bin` | The face only changes when the feeling changes, "I heard you" with a heart at the end of every chat, gear press starts a conversation, no black flash between chats. |
 | `PENGUFILE_v10_full_8MB.bin` | Listens for the feeling inside any sentence ("my day was bad" works), 63 feeling families, 99 hand drawn faces, stays present when it misses. Hold the gear button for the help line. |

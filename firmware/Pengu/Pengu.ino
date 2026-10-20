@@ -44,6 +44,7 @@
 #include "faces.h"
 #include "phrases.h"
 #include "sounds.h"
+#include "speech.h"
 #include "src/display/epaper_driver_bsp.h"
 #include "src/power/board_power_bsp.h"
 
@@ -59,6 +60,7 @@
 #define SLEEP_AFTER_MS      600000   // falls asleep after 10 quiet minutes
 #define PULSE_MS            500      // the "(((" ear mark pulses while Pengu listens
 #define VOICE_VOLUME        85       // how loud the little penguin words are (0 = silent, 100 = loud). The codec is quiet below 70.
+#define SHOW_AUDIO_DEBUG    1        // 1 = tiny text top right: what the speaker reported last (set 0 for the real product)
 
 // ---------------------------------------------------------------- display
 static epaper_driver_display *epd = nullptr;
@@ -69,10 +71,15 @@ static bool allow_full_refresh = false;   // the flashing clean refresh only hap
 static void put_black_pixel(int x, int y) { epd->EPD_DrawColorPixel(x, y, DRIVER_COLOR_BLACK); }
 
 // sketch = which drawing (SK_...), or -1 for the mood's usual one
+static char audio_dbg[24] = "";       // what the speaker reported last (shown on screen when SHOW_AUDIO_DEBUG is 1)
 static void show(mood_t mood, int sketch, int variant, int frame, const char *line)
 {
   epd->EPD_Clear();
   draw_face(mood, sketch, variant, frame, line, put_black_pixel);
+#if SHOW_AUDIO_DEBUG
+  snprintf(audio_dbg, sizeof(audio_dbg), "S%d", g_speech_last);      // S0 = the last spoken line played fine
+  g_px = put_black_pixel; draw_text(FACE_W - 6 * (int)strlen(audio_dbg) - 2, 2, audio_dbg, 1);
+#endif
   if (allow_full_refresh && partial_refreshes >= FULL_REFRESH_EVERY) {
     epd->EPD_Init(); epd->EPD_Display(); epd->EPD_DisplayPartBaseImage(); epd->EPD_Init_Partial();
     partial_refreshes = 0;
@@ -90,13 +97,19 @@ static void say(const char *line)
   for (const char *c = line; *c && n < 11; c++) { if (*c >= 'A' && *c <= 'Z') w[n++] = *c; else if (n) break; }
   w[n] = 0;
   for (size_t i = 0; i < sizeof(SOUNDS) / sizeof(SOUNDS[0]); i++)
-    if (strcmp(SOUNDS[i].word, w) == 0) { audio_play(SOUNDS[i].data, SOUNDS[i].n, VOICE_VOLUME); return; }
+    if (strcmp(SOUNDS[i].word, w) == 0) { speech_wait(); audio_play(SOUNDS[i].data, SOUNDS[i].n, VOICE_VOLUME); return; }
 }
+
+// show the line, then say it (the voice runs in the background so the face can keep moving)
+static void speak(const char *line) { speech_say(line); }
 
 // play the mood's little animation (4 frames), ending on frame 0
 static void play(mood_t mood, int sketch, int variant, const char *line)
 {
-  for (int f = 1; f < ANIM_FRAMES; f++) { show(mood, sketch, variant, f, line); delay(FRAME_MS); }
+  show(mood, sketch, variant, 1, line);          // the words appear...
+  speak(line);                                   // ...and Pengu says them, while the little animation plays
+  delay(FRAME_MS);
+  for (int f = 2; f < ANIM_FRAMES; f++) { show(mood, sketch, variant, f, line); delay(FRAME_MS); }
   show(mood, sketch, variant, 0, line);
 }
 
@@ -184,6 +197,7 @@ static void go_rest(const char *line)
   rest_since = last_blink = millis(); rest_line = line;
   set_face(MOOD_IDLE, -1, 0, line); cur_tone = TONE_NEUTRAL;
   show(MOOD_IDLE, -1, 0, 0, line);
+  if (line != LINE_IDLE) speak(line);           // "I AM HERE WHEN YOU NEED ME" is said; the standing hint is not
 }
 
 // the "I heard you" moment: same face, a heart, chat closed, face stays for a while
@@ -200,6 +214,7 @@ static void heard_you()
   strlcpy(cur_text, line, sizeof(cur_text));
   say("HEART");                                         // the little three-note jingle: I heard you
   show(cur_mood, cur_sketch, cur_var, 0, cur_text);
+  speak(cur_text);
 }
 
 static void go_listen(const char *line, bool from_button = false)
@@ -210,8 +225,8 @@ static void go_listen(const char *line, bool from_button = false)
   state = LISTENING; asleep = false; in_chat = true; follow_up = false; retries = 0; awaiting = Q_NONE;
   vad_on = false; listen_line = line;
   strlcpy(cur_text, line, sizeof(cur_text));
-  say("LISTEN");                                        // a little rising blip so you know it is listening
   show(cur_mood, cur_sketch, cur_var, 0, cur_text);     // same face, ear mark on, "I AM LISTENING"
+  speak(cur_text);                                      // "I am listening"
   if (!from_button) delay(300);                 // let the tail of "hey pengu" pass before we count talking
   vad_heard_voice = false; vad_on = true;
   state_until = millis() + LISTEN_WINDOW_MS;
@@ -243,7 +258,6 @@ static void react(int command_id)
   g_chat_pulse = 2;
   set_face(fam.mood, sketch, pick_different(FACE_VARIANTS, &last_variant), line);
   said_something = true;
-  say(line);
   switch (fam.mood) {
     case MOOD_SAD: case MOOD_SCARED: case MOOD_NERVOUS: case MOOD_TIRED: case MOOD_GRUMPY: case MOOD_ANGRY: case MOOD_DISGUSTED: cur_tone = TONE_SAD; break;
     case MOOD_HAPPY: case MOOD_PROUD: case MOOD_CONFIDENT: case MOOD_MISCHIEVOUS: case MOOD_SHY: cur_tone = TONE_GOOD; break;
@@ -281,10 +295,10 @@ static void answer(int kind, bool yes)
   Serial.printf("Pengu: %s\n", line);
   awaiting = Q_NONE; retries = 0; g_heart = false; vad_on = false; g_chat_pulse = 2; said_something = true;
   strlcpy(cur_text, line, sizeof(cur_text));
-  say(line);
   g_chat_dot = true;
   if (yes && kind == Q_TELL) {        // "tell me more?" yes: a fresh listening window, same face
     show(cur_mood, cur_sketch, cur_var, 0, cur_text);
+    speak(cur_text);
     in_chat = true; follow_up = false; state = LISTENING;
     state_until = millis() + LISTEN_WINDOW_MS; vad_heard_voice = false; vad_on = true; last_pulse = millis();
     return;
@@ -319,7 +333,7 @@ static esp_err_t mic_fill(void *arg, void *out, size_t len, size_t *bytes_read, 
   *bytes_read = len;
 
   float level = (float)((pick ? energy_r : energy_l) / (int64_t)frames);
-  if (!vad_on) {
+  if (!vad_on || g_speech_busy) {                                  // Pengu's own voice does not count as you talking
     noise_floor = noise_floor * 0.98f + level * 0.02f;          // learn how loud the room is
   } else {
     noise_floor = noise_floor * 0.998f + level * 0.002f;        // while listening, learn very slowly (a fan or TV must not jam us)
@@ -355,7 +369,8 @@ void setup()
 
   build_phrases();
   audio_bsp_init();
-  say("LISTEN"); say("HELLO");                  // a blip and a word at boot: if you hear both, the speaker works
+  speech_init(VOICE_VOLUME);
+  speak("WAKING UP...");                        // Pengu says what the screen says, from the very first screen
   esp_err_t err = sr_start(mic_fill, nullptr, SR_CHANNELS_MONO, SR_MODE_COMMAND, "M",
                            all_phrases, phrase_count, on_voice_event, nullptr);
   if (err != ESP_OK) {
@@ -384,7 +399,7 @@ void loop()
       Serial.println("Power button -> restart");
       g_chat_dot = false; g_heart = false;
       show(MOOD_IDLE, -1, 0, 0, "RESTARTING...");
-      delay(300);
+      speech_wait(); delay(300);
       ESP.restart();
     }
   } else pwr_since = 0;
@@ -413,6 +428,10 @@ void loop()
   was_pressed = pressed;
 
   // ---- a sentence was recognised
+  if (voice_cmd >= 0 && (g_speech_busy || millis() - g_speech_end < 500)) {
+    voice_cmd = -1;                                                 // that was Pengu talking, not you
+    Serial.println("  (heard myself - ignored)");
+  }
   if (voice_cmd >= 0) {
     int cmd = voice_cmd, ph = voice_phrase; voice_cmd = -1;
     Serial.printf("Heard: \"%s\"\n", (ph >= 0 && ph < (int)phrase_count) ? all_phrases[ph].str : "?");
@@ -457,6 +476,7 @@ void loop()
         strlcpy(cur_text, listen_line, sizeof(cur_text));
         vad_on = false; g_chat_pulse = 2;
         show(cur_mood, cur_sketch, cur_var, 0, cur_text);   // the face does not change: only the words
+        speak(cur_text);
         vad_heard_voice = false; vad_on = true;
         state_until = millis() + LISTEN_WINDOW_MS; last_pulse = millis();
       } else {

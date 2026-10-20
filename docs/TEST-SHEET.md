@@ -175,6 +175,7 @@ Pass = 8 of 9.
 
 | # | Do this | Should happen |
 |---|---|---|
-| 87 | Plug in | After WAKING UP: a rising blip, then a small "hello" |
-| 88 | Press the gear and say "I am sad" straight away, finger still on the button | Sad face, "oh", "OH NO. WANT A HUG?" |
-| 89 | Say "yes" | Heart-eyes face, "big", "BIG HUG. SQUEEZE" |
+| 87 | Plug in | Pengu says "waking up" as the screen shows WAKING UP..., then "say hey pengu" is silent (the standing hint) |
+| 88 | Press the gear and say "I am sad" straight away, finger still on the button | Pengu says "I am listening", then sad face and it says "oh no. want a hug?" as the words appear |
+| 89 | Say "yes" | Heart-eyes face, it says "big hug. squeeze" |
+| 90 | Look at the top right corner after it speaks | A tiny "S0". If it says anything else (S3, S-3...), photograph it and send it |

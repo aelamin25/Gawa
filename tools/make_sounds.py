@@ -22,8 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 VOICE = os.path.join(HERE, "en_US-amy-medium.onnx")   # a soft voice; pitched up a little, not chipmunked
 OUT = os.path.join(ROOT, "firmware", "Pengu", "sounds.h")
 WAVS = os.path.join(ROOT, "artwork", "sounds")
-WORDS = { "oh": "Oh!", "big": "Big!", "yay": "Yay!", "woo": "Woo!", "hmm": "Hmm.", "phew": "Phew!", "grr": "Grr!",
-          "ooh": "Ooh!", "eww": "Eww!", "night": "Night night.", "hello": "Hello!", "okay": "Okay!", "yes": "Yes?", "sorry": "Sorry." }
+WORDS = {}   # since v13 the words are spoken whole lines (tools/make_speech.py); only the blips live here
 PITCH = 1.25       # higher = smaller penguin (1.0 = the voice as it is). Pitch only: the words do not get faster
 TEMPO = 0.9        # lower = slower, gentler words
 BITS = 8           # 8-bit era texture, mixed in lightly so the words stay clear (fewer bits = crunchier)

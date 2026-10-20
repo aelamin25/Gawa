@@ -1,9 +1,11 @@
 # Partition table for the 8 MB flash on the ESP32-S3-ePaper-1.54 (V2).
-# "model" holds the ESP-SR speech models (srmodels.bin, 3.2 MB) and is flashed at 0x410000.
+# app0   = the program (Pengu.ino and friends)
+# model  = the ESP-SR speech models (srmodels.bin, 3.2 MB), flashed at 0x2F0000. Found by name, so the offset may move.
+# speech = Pengu's spoken lines (releases/speech.bin, made by tools/make_speech.py), flashed at 0x620000
 # Name,     Type, SubType,  Offset,   Size,     Flags
 nvs,        data, nvs,      0x9000,   0x5000,
 otadata,    data, ota,      0xe000,   0x2000,
-app0,       app,  ota_0,    0x10000,  0x400000,
-model,      data, spiffs,   0x410000, 0x330000,
-spiffs,     data, spiffs,   0x740000, 0xA0000,
+app0,       app,  ota_0,    0x10000,  0x2E0000,
+model,      data, spiffs,   0x2F0000, 0x330000,
+speech,     data, 0x40,     0x620000, 0x1D0000,
 coredump,   data, coredump, 0x7F0000, 0x10000,

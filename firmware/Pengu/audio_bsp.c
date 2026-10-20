@@ -44,19 +44,35 @@ int audio_mic_read(void *buf, size_t len)
   return esp_codec_dev_read(record, buf, (int)len) == ESP_CODEC_DEV_OK ? 0 : -1;
 }
 
-void audio_play(const int16_t *mono, size_t n, int volume)
+static int current_volume = -1;
+void audio_volume(int volume)
+{
+  if (current_volume == volume) return;
+  int rv = esp_codec_dev_set_out_vol(playback, volume);   // 0..100; the codec maps 100 to 0 dB and 50 to -25 dB, so keep it high
+  current_volume = volume;
+  if (rv != 0) printf("audio: set volume %d failed (%d)\n", volume, rv);
+}
+
+int audio_write(const int16_t *stereo, size_t n)
+{
+  int w = esp_codec_dev_write(playback, (void *)stereo, (int)(n * sizeof(int16_t)));
+  return w == ESP_CODEC_DEV_OK ? 0 : w;
+}
+
+int audio_play(const int16_t *mono, size_t n, int volume)
 {
   static int16_t stereo[512];
-  int rv = esp_codec_dev_set_out_vol(playback, volume);   // 0..100; the codec maps 100 to 0 dB and 50 to -25 dB, so keep it high
-  int bad = 0;
+  audio_volume(volume);
+  int bad = 0, first_err = 0;
   for (size_t i = 0; i < n; i += 256) {
     size_t k = (n - i < 256) ? n - i : 256;
     for (size_t j = 0; j < k; j++) { stereo[2 * j] = mono[i + j]; stereo[2 * j + 1] = mono[i + j]; }
-    if (esp_codec_dev_write(playback, stereo, (int)(k * 2 * sizeof(int16_t))) != ESP_CODEC_DEV_OK) bad++;
+    int w = audio_write(stereo, k * 2);
+    if (w != 0) { bad++; if (!first_err) first_err = w; }
   }
-  // a little silence so the last samples leave the speaker before we turn the volume down
-  memset(stereo, 0, sizeof(stereo));
-  for (int i = 0; i < 4; i++) esp_codec_dev_write(playback, stereo, sizeof(stereo));
-  esp_codec_dev_set_out_vol(playback, 0);   // quiet again (no speaker hiss between words)
-  printf("audio: played %u samples at volume %d (vol result %d, failed writes %d)\n", (unsigned)n, volume, rv, bad);
+  memset(stereo, 0, sizeof(stereo));                       // a little silence so the last samples leave the speaker
+  for (int i = 0; i < 2; i++) audio_write(stereo, 512);
+  printf("audio: played %u samples at volume %d (failed writes %d, first error %d)\n", (unsigned)n, volume, bad, first_err);
+  if (first_err != 0) return first_err;
+  return bad;
 }

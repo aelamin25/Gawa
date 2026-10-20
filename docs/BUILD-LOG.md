@@ -354,27 +354,36 @@ paragraph on the screen.
 
 ---
 
-## Step 18 – v13: words you can hear, and the gear listens the moment you press (20 Oct 2026)
+## Step 18 – v13: Pengu says exactly what is on the screen (20 Oct 2026)
 
-**What we wanted:** v12 on the board: the blips play, the penguins are whole, but the spoken words could not be heard.
-And when M pressed the gear and said "I am sad" straight away, Pengu missed it.
+**What we wanted:** v12 on the board: the blips play, the penguins are whole, "hello" is heard at boot, but after
+that no words at all. M also asked for the real thing: Pengu should say exactly what the screen says, in sync, and the
+gear press should catch "I am sad" said straight away.
 
 **What we did:**
-- The words: the clips were soft, muffled and low, three things a one inch speaker cannot do. They are now cleaner
-  (much less 8-bit crunch), cut below 250 Hz where the speaker is silent anyway, squeezed with a compressor and pushed up
-  to -3 dB, so the speaker gets something it can actually move with. The blips are louder to match. At boot Pengu now
-  plays the blip AND says "hello", so you can tell in one second whether words come through at all.
-- The gear: the chat used to start when you let go of the button. If you spoke while your finger was still on it,
-  Pengu heard you but threw it away ("say Hey Pengu first"). Now the chat starts the moment you press, the blip plays
-  first and the mic is armed at once (no 300 ms pause, that was for the tail of "hey pengu"), and anything Pengu heard
-  in the three seconds before a chat opened is answered the moment it opens. So "press, I am sad" works whichever order
-  the two arrive in.
+- Every line Pengu can show is now recorded: 292 lines (every reply, every question, every yes and no, "I AM LISTENING",
+  "MM HMM. GO ON", "WAKING UP..."), 462 seconds of speech, made by `tools/make_speech.py` with the same soft voice,
+  pitched up a little, cleaned for the tiny speaker (nothing below 250 Hz, compressed, loud). Packed as 8 kHz ADPCM
+  (4 bits a sample) into `releases/speech.bin`, 1.8 MB, which lives in its own flash partition called "speech".
+  To fit it the flash map changed (`partitions.csv`): program 3 MB, speech models 3.2 MB, speech 1.8 MB.
+  Because the map changed, this version must be flashed as the full file after Erase Flash, like always.
+- The voice plays on a small background task, so the words appear on screen and Pengu starts saying them in the same
+  moment while the little animation keeps moving. The short "oh"/"big" word clips are gone; only the three chiptune
+  blips remain (heart jingle, sleep, listen).
+- Pengu does not answer itself: while it is talking, and for half a second after, the microphone's "did they talk?"
+  detector and any recognised phrase are ignored (otherwise "GOOD OR BAD?" could answer its own question).
+- The gear press: the chat used to start when you let go of the button; if you spoke with your finger still on it,
+  the phrase was thrown away. Now the chat starts the moment you press, and anything heard in the three seconds before
+  a chat opens is answered as soon as it opens.
+- Still unexplained: in v12, sounds after boot were silent even though the boot sound worked. A tiny "S0" in the top
+  right corner now shows what the speaker reported for the last spoken line (S0 = fine, anything else = the number of
+  failed writes or an error code). It is one switch (`SHOW_AUDIO_DEBUG`) to turn off once we know.
 
-**Did it work:** compiles; every clip measured (words peak -3 dB, blips -8 dB). Needs the board to confirm the words
-are audible now. If "hello" at boot is still silent while the blip plays, the next suspect is the speaker's low
-frequency limit and we go higher in pitch.
+**Did it work:** compiles (2.7 MB program, 1.8 MB speech); the ADPCM round trip was checked on the PC
+(`pengu_speech_sample.wav`). The speaker behaviour after boot is the thing the board has to tell us.
 
-**So what:** a tiny speaker is a different instrument from headphones; test on the real thing, early.
+**So what:** the screen and the voice are now the same sentence from the same list, so they can never disagree.
+Flash is a budget like everything else: four bits per sample bought us a whole voice.
 
 ---
 

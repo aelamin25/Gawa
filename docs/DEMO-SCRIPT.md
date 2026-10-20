@@ -1,10 +1,10 @@
 # The 90 second demo
 
-Say these in order. Every line is one Gawa is sure to catch. Hold Gawa 30 to 50 cm from your mouth and speak clearly.
+Say these in order. Every line is one Pengu is sure to catch. Hold Pengu 30 to 50 cm from your mouth and speak clearly.
 
-| Step | You say | Gawa does |
+| Step | You say | Pengu does |
 |---|---|---|
-| 1 | "Hey Gawa" | ears up, I AM LISTENING |
+| 1 | "Hey Pengu" | ears up, I AM LISTENING |
 | 2 | "How are you?" | happy face, "GREAT! HOW WAS YOUR DAY? GOOD OR BAD?" |
 | 3 | "Pretty bad" | sad face, "OH NO. BIG HUG" (the "(((" mark means it is still listening) |
 | 4 | "I failed my driving test" | sad face, "YOUR DRIVING TEST. THAT STINGS" |
@@ -12,10 +12,10 @@ Say these in order. Every line is one Gawa is sure to catch. Hold Gawa 30 to 50 
 | 6 | "But guess what" | curious face, "OOH, WHAT?" |
 | 7 | "I got the job!" | proud face, bounce and sparkles, "LOOK AT YOU GO!" |
 | 8 | "Tell me a joke" | mischievous face, "I TRIED TO FLY ONCE. ONCE" |
-| 9 | "Thank you Gawa" | grateful face, hearts, "ANY TIME, FRIEND", chat closes |
-| 10 | "Good night Gawa" | sleepy face, Zs |
+| 9 | "Thank you Pengu" | grateful face, hearts, "ANY TIME, FRIEND", chat closes |
+| 10 | "Good night Pengu" | sleepy face, Zs |
 
-If a line is missed, Gawa says "MM HMM. GO ON". Just say the line again a little slower.
+If a line is missed, Pengu says "MM HMM. GO ON". Just say the line again a little slower.
 
 ## Things to try off script (these work too)
 

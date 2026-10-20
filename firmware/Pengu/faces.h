@@ -1,4 +1,4 @@
-// faces.h - Gawa the penguin: drawing helpers, moods, expressions and animation frames.
+// faces.h - Pengu the penguin: drawing helpers, moods, expressions and animation frames.
 // Pure C/C++ so it can also be compiled on a PC to preview the 200x200 image.
 //
 //   draw_face(mood, sketch, variant, frame, line, put_pixel)
@@ -288,7 +288,7 @@ static void draw_pet(mood_t mood, int sketch, int variant, int frame, float scal
   g_scale = 1.0f; g_ox = 0; g_oy = 0; g_sketch = -1;
 }
 
-static bool g_chat_dot = false;   // true while Gawa is listening: a small "(((" ear mark top-left
+static bool g_chat_dot = false;   // true while Pengu is listening: a small "(((" ear mark top-left
 static int  g_chat_pulse = 2;     // how many arcs the ear mark shows (1..3): it pulses while you talk
 static bool g_heart = false;      // true for the "I HEARD YOU" moment: a little heart top-right
 

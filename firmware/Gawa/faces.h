@@ -1,9 +1,10 @@
 // faces.h - Gawa the penguin: drawing helpers, moods, expressions and animation frames.
 // Pure C/C++ so it can also be compiled on a PC to preview the 200x200 image.
 //
-//   draw_face(mood, variant, frame, line, put_pixel)
-//     mood    : one of the 22 moods in mood_t below (MOOD_IDLE, MOOD_HAPPY, MOOD_SAD, MOOD_SCARED, ...)
-//     variant : 0..FACE_VARIANTS-1, a different expression for the same mood
+//   draw_face(mood, sketch, variant, frame, line, put_pixel)
+//     mood    : one of the 22 moods in mood_t below: which little animation plays (tears, hearts, Zs, puffs ...)
+//     sketch  : which of the 99 pencil drawings in sketches.h to show (SK_HOPEFUL, SK_JEALOUS ...), or -1 for the mood's usual one
+//     variant : 0..FACE_VARIANTS-1, different extras for the same mood
 //     frame   : 0..ANIM_FRAMES-1, one step of that mood's little animation
 //     line    : up to 3 rows of big text under the penguin (or NULL)
 #pragma once
@@ -179,9 +180,15 @@ static void big_z(int x, int y, int s)   { draw_text(x, y, "Z", s); }
 static void rain(int x, int y, int n)    { for (int i = 0; i < n; i++) { int xx = x + i * 14, yy = y + (i * 7) % 20; px(xx, yy); px(xx, yy + 1); px(xx, yy + 2); px(xx, yy + 3); } }
 static void sweat_drop(int x, int y)     { fill_circle(x, y, 2); px(x, y - 3); px(x, y - 4); }
 
-// The penguin in a mood. variant = which drawing / which extras, frame = animation step.
-static void draw_pet(mood_t mood, int variant, int frame, float scale, int ox, int oy) {
+// The penguin in a mood.
+//   mood    = which little animation plays on top (tears, hearts, Zs, puffs ...)
+//   sketch  = which drawing to show (SK_...), or -1 for the mood's usual drawing
+//   variant = which extras, frame = animation step
+static int g_sketch = -1;
+#define SK(x) (g_sketch >= 0 ? g_sketch : (x))
+static void draw_pet(mood_t mood, int sketch, int variant, int frame, float scale, int ox, int oy) {
   g_scale = scale; g_ox = ox; g_oy = oy;
+  g_sketch = (sketch >= 0 && sketch < SK_COUNT) ? sketch : -1;
   variant %= FACE_VARIANTS; frame %= ANIM_FRAMES;
   static const int bounce[ANIM_FRAMES] = { 0, -4, 0, -2 };
   static const int wobble[ANIM_FRAMES] = { -2, 2, -1, 1 };
@@ -189,103 +196,103 @@ static void draw_pet(mood_t mood, int variant, int frame, float scale, int ox, i
 
   switch (mood) {
     case MOOD_HAPPY:
-      if (variant == 0)      { draw_sketch(SK_EXCITED, 0, dy); if (frame & 1) { sparkle(30, 20, 4); sparkle(176, 60, 3); } }
-      else if (variant == 1) { draw_sketch(SK_HAPPY, 0, dy); heart(178, 40 - frame * 3); if (frame >= 2) heart(22, 70 - (frame - 2) * 4); }
-      else                   { draw_sketch(SK_SILLY, 0, dy); music_note(176, 30 - (frame & 1) * 3); if (frame >= 2) music_note(20, 50); }
+      if (variant == 0)      { draw_sketch(SK(SK_EXCITED), 0, dy); if (frame & 1) { sparkle(30, 20, 4); sparkle(176, 60, 3); } }
+      else if (variant == 1) { draw_sketch(SK(SK_HAPPY), 0, dy); heart(178, 40 - frame * 3); if (frame >= 2) heart(22, 70 - (frame - 2) * 4); }
+      else                   { draw_sketch(SK(SK_SILLY), 0, dy); music_note(176, 30 - (frame & 1) * 3); if (frame >= 2) music_note(20, 50); }
       break;
     case MOOD_SAD:
-      draw_sketch(SK_SAD, 0, 0);
+      draw_sketch(SK(SK_SAD), 0, 0);
       if (variant == 0 || variant == 2) tear(34, 96 + frame * 6);
       if (variant == 1 || variant == 2) tear(166, 90 + ((frame + 2) % 4) * 6);
       break;
     case MOOD_ANGRY:
-      draw_sketch(SK_ANGRY, wx, 0);
+      draw_sketch(SK(SK_ANGRY), wx, 0);
       if (frame >= 1) puff(176, 36 - frame * 2, 4 + frame);
       if (frame >= 2 && variant != 1) puff(24, 40 - frame, 3 + frame);
       break;
     case MOOD_THINKING:                       // confused: not sure, did not understand
-      draw_sketch(SK_CONFUSED, 0, 0);
+      draw_sketch(SK(SK_CONFUSED), 0, 0);
       if (variant != 2) qmark(170, 18 - frame * 3);
       if (variant == 1 && frame >= 2) qmark(12, 30);
       break;
     case MOOD_THOUGHTFUL:
-      draw_sketch(variant == 1 ? SK_THOUGHTFUL2 : SK_THOUGHTFUL, 0, 0);
+      draw_sketch(SK(variant == 1 ? SK_THOUGHTFUL2 : SK_THOUGHTFUL), 0, 0);
       if (frame >= 1) fill_circle(170, 30, 2); if (frame >= 2) fill_circle(178, 20, 3); if (frame >= 3) ring(188, 8, 6, 1);
       break;
     case MOOD_LISTENING:
-      draw_sketch(SK_SURPRISED, wx, 0);
+      draw_sketch(SK(SK_SURPRISED), wx, 0);
       break;
     case MOOD_SLEEP:
-      draw_sketch(SK_SLEEPY, 0, 0);
+      draw_sketch(SK(SK_SLEEPY), 0, 0);
       if (frame >= 1) big_z(164, 10, 2);
       if (frame >= 2) big_z(180, -2, 2);
       if (frame >= 3) big_z(150, 24, 1);
       break;
     case MOOD_SCARED:
-      draw_sketch(SK_SCARED, wx, 0);
+      draw_sketch(SK(SK_SCARED), wx, 0);
       if (frame & 1) sweat_drop(176, 40);
       break;
     case MOOD_GRUMPY:
-      draw_sketch(SK_GRUMPY, 0, 0);
+      draw_sketch(SK(SK_GRUMPY), 0, 0);
       rain(150, 10 + frame * 4, 3);
       break;
     case MOOD_GRATEFUL:
-      draw_sketch(SK_GRATEFUL, 0, dy);
+      draw_sketch(SK(SK_GRATEFUL), 0, dy);
       heart(180, 44 - frame * 4); if (frame >= 2) heart(20, 60 - (frame - 2) * 5);
       break;
     case MOOD_PROUD:
-      draw_sketch(SK_PROUD, 0, dy);
+      draw_sketch(SK(SK_PROUD), 0, dy);
       if (frame & 1) { sparkle(176, 30, 4); sparkle(24, 50, 3); }
       break;
     case MOOD_CURIOUS:
-      draw_sketch(SK_CURIOUS, 0, 0);
+      draw_sketch(SK(SK_CURIOUS), 0, 0);
       if (variant != 2) qmark(168, 14 - frame * 3);
       break;
     case MOOD_CONFIDENT:
-      draw_sketch(SK_CONFIDENT, 0, dy);
+      draw_sketch(SK(SK_CONFIDENT), 0, dy);
       if (frame & 1) sparkle(172, 24, 5);
       break;
     case MOOD_PEACEFUL:
-      draw_sketch(SK_PEACEFUL, 0, frame == 2 ? -2 : 0);
+      draw_sketch(SK(SK_PEACEFUL), 0, frame == 2 ? -2 : 0);
       break;
     case MOOD_MISCHIEVOUS:
-      draw_sketch(SK_MISCHIEVOUS, wx, 0);
+      draw_sketch(SK(SK_MISCHIEVOUS), wx, 0);
       if (frame & 1) sparkle(176, 36, 3);
       break;
     case MOOD_RELIEF:
-      draw_sketch(SK_RELIEF, 0, 0);
+      draw_sketch(SK(SK_RELIEF), 0, 0);
       sweat_drop(176, 30 + frame * 8);
       break;
     case MOOD_SHOCKED:
-      draw_sketch(SK_SHOCKED, wx, 0);
+      draw_sketch(SK(SK_SHOCKED), wx, 0);
       break;
     case MOOD_DISGUSTED:
-      draw_sketch(SK_DISGUSTED, wx, 0);
+      draw_sketch(SK(SK_DISGUSTED), wx, 0);
       break;
     case MOOD_NERVOUS:
-      draw_sketch(SK_NERVOUS, wx, 0);
+      draw_sketch(SK(SK_NERVOUS), wx, 0);
       sweat_drop(170, 30 + frame * 6); if (frame >= 2) sweat_drop(26, 40 + (frame - 2) * 6);
       break;
     case MOOD_TIRED:
-      draw_sketch(SK_TIRED, 0, 0);
+      draw_sketch(SK(SK_TIRED), 0, 0);
       if (frame >= 2) big_z(170, 14, 1); if (frame >= 3) big_z(180, 2, 1);
       break;
     case MOOD_SHY:
-      draw_sketch(SK_SHY, 0, 0);
+      draw_sketch(SK(SK_SHY), 0, 0);
       if (frame & 1) heart(180, 36);
       break;
     default:   // idle: the calm smiling face, with a tiny breath on frame 2
-      draw_sketch(SK_HAPPY, 0, frame == 2 ? -2 : 0);
+      draw_sketch(SK(SK_HAPPY), 0, frame == 2 ? -2 : 0);
       break;
   }
-  g_scale = 1.0f; g_ox = 0; g_oy = 0;
+  g_scale = 1.0f; g_ox = 0; g_oy = 0; g_sketch = -1;
 }
 
 static bool g_chat_dot = false;   // true while Gawa is still listening for a follow-up: a small ear mark top-left
 
-static void draw_face(mood_t mood, int variant, int frame, const char *line, face_px_fn put_pixel) {
+static void draw_face(mood_t mood, int sketch, int variant, int frame, const char *line, face_px_fn put_pixel) {
   g_px = put_pixel;
-  draw_pet(mood, variant, frame, 1.0f, 0, 0);
+  draw_pet(mood, sketch, variant, frame, 1.0f, 0, 0);
   if (line && *line) draw_line_big(line);
   if (g_chat_dot) { arc(12, 12, 8, 2, 100, 260); arc(12, 12, 4, 2, 100, 260); fill_circle(12, 12, 1); }   // "(((" listening mark
 }

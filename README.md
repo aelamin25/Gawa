@@ -23,7 +23,10 @@ It runs on a small board with a microphone and a black and white screen, with no
 4. Keep talking. For ten seconds after every answer it keeps listening (a little "(((" mark shows).
 5. Say "thank you", "okay stop", "that is all" or "good night" to finish. Or just go quiet.
 
-It understands 387 sentences built from 55 patterns, and it has 22 moods drawn by hand.
+**How it understands you (with no internet):** it listens for the short chunk that carries the feeling, like "was bad",
+"so tired", "cat died" or "passed my", and spots it inside whatever you say. So "my day was bad", "honestly it was a bad day"
+and "today was pretty bad" all get the sad face. It knows 399 chunks in 63 feeling families, with 99 hand drawn faces. When it hears you but
+catches nothing, it says "MM HMM. GO ON" and keeps listening, so you never feel ignored.
 You can also ask it things: "how are you?", "what is your name?", "do you like me?", "tell me a joke".
 
 ## What is in this folder
@@ -33,7 +36,7 @@ You can also ask it things: "how are you?", "what is your name?", "do you like m
 | `docs/` | The brief, the build diary (`BUILD-LOG.md`), the test sheet, how to use GitHub | Everyone. Start with the build diary. |
 | `releases/` | Ready made files to load onto the board. Use the newest one. | People who want to run Gawa. |
 | `firmware/Gawa/` | The program itself (Arduino). `phrases.h` is what it understands, `faces.h` is how it draws. | People who want to change Gawa. |
-| `artwork/` | The 24 penguin drawings, the original sheets, and preview pictures | Anyone who wants to draw a new face. |
+| `artwork/` | The 99 penguin drawings, the original sheets, and preview pictures | Anyone who wants to draw a new face. |
 | `tools/` | `make_sketches.py` turns drawings into something the board can show | People who add drawings. |
 | `extras/` | A parked "cloud brain" version that talks to the internet. Not used right now. | Later. |
 
@@ -52,7 +55,9 @@ Open `firmware/Gawa/Gawa.ino`. Board **ESP32S3 Dev Module**, USB CDC On Boot Ena
 PSRAM OPI, Partition Scheme **Custom**, Erase All Flash **Disabled**. Upload.
 
 - New sentences: add a word to a list in `phrases.h`. One word teaches a whole family of sentences.
-- New faces: put a PNG in `artwork/sketches/`, run `python3 tools/make_sketches.py`, upload.
+- New faces: put a PNG in `artwork/sketches/`, add its name to `NAMES` in `tools/make_sketches.py`, run
+  `python3 tools/make_sketches.py`, then add `SK_YOURNAME` to a family's face list (the `F_...` lines in `phrases.h`), upload.
+- Stuck? Hold the gear button for one second and Gawa shows the reminder: "SAY HEY GAWA. THEN TELL ME HOW YOU FEEL".
 - Timings (listening window, rest time): the `#define` lines at the top of `Gawa.ino`.
 
 ## The board

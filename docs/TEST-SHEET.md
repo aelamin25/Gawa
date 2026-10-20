@@ -80,3 +80,42 @@ Pass = all six behave as written.
 2. Say "Hey Gawa" with the TV or music on, and say nothing. It must still give up after 10 seconds, not listen forever.
 3. Say "Hey Gawa, how are you", answer "it was good", then say nothing for 10 seconds. The happy face stays, the "(((" mark goes.
 4. Say "good night gawa". Sleepy face straight away, no two minute wait.
+
+## Natural sentence test (v10)
+
+Say "Hey Gawa" first each time. Gawa should catch the feeling even though none of these is a line from its list.
+
+| # | Say this | Should show |
+|---|---|---|
+| 41 | "Honestly my day was really bad" | Sad |
+| 42 | "I think I passed my exam today" | Proud |
+| 43 | "Ugh, I am so tired of all this" | Tired |
+| 44 | "Someone at work shouted at me" | Angry |
+| 45 | "I have got a big interview tomorrow" | Nervous |
+| 46 | "My gran is in hospital again" | Sad, "SO SORRY ABOUT YOUR GRAN" |
+| 47 | "I feel really lonely tonight" | Sad |
+| 48 | "We won the match!" | Proud |
+| 49 | "I am not sure what to do about it" | Confused |
+| 50 | "It is over, I am so relieved" | Relief |
+
+Pass = 8 of 10. Any miss should show "MM HMM. GO ON", never a complaint.
+
+## New feelings test (v10, 99 faces)
+
+Say "Hey Gawa" first each time. Watch that the face changes between tries of the same feeling (each family has 2 to 5 faces).
+
+| # | Say this | Should show |
+|---|---|---|
+| 51 | "I am so jealous of my brother" | Jealous face, "THAT STINGS. I GET IT" or similar |
+| 52 | "Fingers crossed for tomorrow" | Hopeful face, "FINGERS CROSSED WITH YOU" |
+| 53 | "I feel guilty about it" | Guilty face, "THAT IS A HEAVY ONE" |
+| 54 | "I am so bored" | Bored face, Zs |
+| 55 | "I am starving" | Hungry face, "I VOTE FISH" |
+| 56 | "Everything is all too much right now" | Overwhelmed face, sweat drops |
+| 57 | "My friend is really struggling" | Caring face, "YOU HAVE A KIND HEART" |
+| 58 | "I feel sick" | Sick face, "OH NO. POOR YOU" |
+| 59 | "Leave me alone" | Calm face, "OKAY. I WILL BE QUIET", and the chat closes (no "(((" mark) |
+| 60 | "Hey Gawa, how are you" then "today was terrible" | Sad face even though it was not a one word answer |
+| 61 | Hold the gear button for one second | "SAY HEY GAWA. THEN TELL ME HOW YOU FEEL", gone after 20 s |
+
+Pass = 9 of 11.

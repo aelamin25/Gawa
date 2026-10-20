@@ -5,7 +5,7 @@ How to use (from the main Gawa folder):
     python3 tools/make_sketches.py
 
 It looks in the "artwork/sketches" folder for these files and makes firmware/Gawa/sketches.h:
-    one PNG per name in NAMES below (happy.png, confused.png, ... shy.png)
+    one PNG per name in NAMES below (happy.png, confused.png, ... appreciative.png), 99 faces in all
 Each picture can be any size; it is shrunk to fit 200 x 150 and turned black-and-white with
 dithering (so pencil shading keeps its texture). Light paper (anything brighter than 215/255) becomes white.
 
@@ -17,9 +17,21 @@ import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-NAMES = ["happy", "confused", "excited", "angry", "sad", "surprised", "sleepy", "silly",
-         "scared", "grumpy", "grateful", "proud", "curious", "confident", "peaceful", "mischievous",
-         "thoughtful", "thoughtful2", "relief", "shocked", "disgusted", "nervous", "tired", "shy"]
+NAMES = [  # the first 24 are from the first two sheets, the rest from the big 112-face sheet
+    "happy", "confused", "excited", "angry", "sad", "surprised", "sleepy", "silly",
+    "scared", "grumpy", "grateful", "proud", "curious", "confident", "peaceful", "mischievous",
+    "thoughtful", "thoughtful2", "relief", "shocked", "disgusted", "nervous", "tired", "shy",
+    "elated", "cheerful", "delighted", "serene", "optimistic", "humble", "empowered", "triumphant",
+    "melancholic", "dejected", "hopeless", "sorrowful", "frustrated", "resentful", "bitter", "hostile",
+    "detailed", "ashamed", "jealous", "envious", "protective", "distrustful", "rivalrous", "empathetic",
+    "sympathetic", "wired", "energetic", "compassionate", "over_positive", "hyper", "fatigued", "stressed",
+    "hungry", "thirsty", "nauseated", "repulsed", "bored", "indifferent", "listless", "inquisitive",
+    "focused", "concentrating", "dazed", "mystified", "insecure", "self_doubting", "decisive", "indecisive",
+    "resigned", "nostalgic", "bittersweet", "contented", "affectionate", "loved", "passionate", "admiring",
+    "appreciative", "guilt_ridden", "hopeful", "terrified", "alarmed", "apprehensive", "uneasy", "burned_out",
+    "devastated", "dread_filled", "perplexed", "bewildered", "lost", "astounded", "stunned", "speechless",
+    "awkward", "content", "embarrassed",
+]
 W, H = 200, 150
 
 def to_bits(path):

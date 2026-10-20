@@ -179,6 +179,43 @@ asks has answers it knows. And reviewing before loading caught a crash that a te
 
 ---
 
+## Step 12 – v10: listen for the feeling, 99 faces, a complete offline companion (20 Oct 2026)
+
+**What we wanted:** the second test video (with a transcript this time) showed the real problem. You said "my day was bad"
+and Gawa only knew "today was bad". People do not talk from a list. We decided to stay offline and make it as finished
+as it can be before any cloud, the way a good product is made: every path works, no rough edges. Then a big new sheet of
+112 penguin expressions arrived, so the faces grew too.
+
+**What we did:**
+- Gawa now listens for short *chunks* that carry the feeling ("was bad", "so tired", "cat died", "passed my") and spots
+  them inside whatever you say. "My day was bad", "honestly it was a bad day", "today was pretty bad" all land on the
+  sad face.
+- One-word answers ("bad", "fine", "rubbish") only count right after Gawa asks "good or bad?", so they cannot misfire
+  from the TV. If you say "today was terrible" mid chat with no question pending, it still counts as sad.
+- When Gawa hears you but catches no chunk, it stays present instead of complaining: thoughtful face, "MM HMM. GO ON";
+  a second time, calm face, "I HEAR YOU. I AM HERE", and the chat closes gently.
+- 75 new pencil faces cut from the big sheet (99 in all). Each feeling family now has its own little list of faces and
+  picks one at random, so "sad" is not always the same drawing. The animation (tears, hearts, Zs, puffs) stays per family.
+- 22 new feeling families so an evening of real talk is covered: hopeful, jealous, guilty, hopeless, bored, hungry,
+  nostalgic, feeling loved, overwhelmed, focused, energetic, caring about someone else, sick, insecure, grateful for
+  something, admiring, dread, wary, "leave me alone" (Gawa goes quiet, no questions), "I miss you", "sorry Gawa", and a
+  quiet-presence family for the darkest things a person can say (Gawa stays and says it cares, nothing more).
+  63 families, 399 chunks: the chip holds 400, so every one is spent.
+- Reviewed line by line (twice: me, then a fresh reviewer) and fixed what we found: "no way" was swallowing "no way out",
+  "I hate this" caught "I hate myself", "too much" caught "not too much sugar", "I won" caught "I wonder", a few replies
+  that leaned towards advice ("one step at a time") were rewritten so Gawa only ever sits with you, and a few faces that
+  argued with their words (a resigned penguin saying "I am not going anywhere") were swapped.
+- Hold the gear button for a second and Gawa shows the one-line reminder of how to use it, for 20 seconds.
+
+**Did it work:** compiles (2.9 MB of the 4 MB app space), every family rendered on the PC and checked by eye
+(`artwork/previews/v10_every_family.png`), no duplicate chunks, every reply fits three rows. Waiting for the next video.
+
+**So what:** a companion does not need to understand every word to be good company. It needs to catch the feeling, have
+a face for it, and never make you feel unheard. The chip's limit of 400 phrases turned out to be a good editor: every
+chunk had to earn its place.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.

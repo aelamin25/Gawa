@@ -35,6 +35,7 @@ You can also ask it things: "how are you?", "what is your name?", "do you like m
 |---|---|---|
 | `docs/` | The brief, the build diary (`BUILD-LOG.md`), the test sheet, how to use GitHub | Everyone. Start with the build diary. |
 | `releases/` | Ready made files to load onto the board. Use the newest one. | People who want to run Pengu. |
+| `docs/VOICE-TAGS.md` | Every line Pengu says, under the feeling it is said with. | Anyone tuning the voice. |
 | `docs/HANDOVER.md` | Where we are and what to build next. Read this first when picking the project back up. | Anyone continuing the work. |
 | `firmware/Pengu/` | The program itself (Arduino). `phrases.h` is what it understands, `faces.h` is how it draws. | People who want to change Pengu. |
 | `artwork/` | The blips (`sounds/`), the 24 penguin drawings (plus 75 spare ones in `extra-75/`), the original sheets, and preview pictures | Anyone who wants to draw a new face. |
@@ -62,7 +63,7 @@ PSRAM OPI, Partition Scheme **Custom**, Erase All Flash **Disabled**. Upload.
 - Stuck? Hold the power button for a moment: Pengu restarts from scratch.
 - Pengu asks little questions back ("WANT A HUG?"). Answer "yes" or "no". Yes and no only count right after a question.
 - Timings (listening window, rest time) and the voice volume (`VOICE_VOLUME`, 0 = silent): the `#define` lines at the top of `Pengu.ino`.
-- The voice: Pengu says exactly what the screen says. After changing any line in `phrases.h`, run the two commands at the top of `tools/make_speech.py` (needs `pip install piper-tts`, ffmpeg and the voice file), then flash `releases/speech.bin` at `0x620000` (or rebuild the full file).
+- The voice: Pengu says exactly what the screen says. After changing any line in `phrases.h`, run the two commands at the top of `tools/make_speech.py` (needs `pip install kokoro-onnx soundfile`, ffmpeg, and the two Kokoro voice files; see the top of that script), then flash `releases/speech.bin` at `0x620000` (or rebuild the full file).
 - New blips: `tools/make_sounds.py`.
 
 ## The board

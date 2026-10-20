@@ -379,8 +379,33 @@ gear press should catch "I am sad" said straight away.
   right corner now shows what the speaker reported for the last spoken line (S0 = fine, anything else = the number of
   failed writes or an error code). It is one switch (`SHOW_AUDIO_DEBUG`) to turn off once we know.
 
-**Did it work:** compiles (2.7 MB program, 1.8 MB speech); the ADPCM round trip was checked on the PC
-(`pengu_speech_sample.wav`). The speaker behaviour after boot is the thing the board has to tell us.
+- The voice itself took four rounds. Two piper voices sounded robotic. The Himalayan Hop voice (Kokoro "Heart") and
+  seven English variations of it, plain, blended and pitched, were "all terrible". What M wanted was a Japanese child
+  anime voice, and Kokoro has those: its Japanese voices speaking Pengu's English lines give exactly that bright, young,
+  lightly accented sound. M picked "Alpha" from seven. It is used as it is, at 0.95 pace, no pitch tricks.
+  `tools/make_speech.py` needs the two Kokoro files (350 MB, on the Mac in the Himalayan Hop models folder, or from the
+  kokoro-onnx releases page). Every one of the 292 clips was checked by machine: all present and matching their text
+  exactly, 0.3 to 2.4 s long, peaks between -7 and -4 dB, no clipping, every clip starts within 0.1 s, index and data
+  contiguous, 1.6 MB in a 1.8 MB partition.
+- Timing of the words: the screen draws the line first (the e-paper takes 0.3 s), and the voice starts the moment the
+  words are readable, never before them; the little animation runs underneath the voice.
+- "Too monotone", said M. So every line now carries a feeling tag (happy, sad, excited, sleepy, curious, loving,
+  grumpy... 17 of them, taken from the face each family shows; `docs/VOICE-TAGS.md` lists every line under its tag), and
+  the voice acts the tag: pace, how high it sits, how loud, and how the pitch moves inside each sentence (questions rise,
+  sad lines fall, excited ones start bright, with a breath between sentences). Said sentence by sentence so each gets
+  its own shape. First try sounded metallic (a cheap pitch shifter); the second uses a proper one that keeps the voice's
+  colour, with smaller moves, and most of the feeling comes from pace. The set grew to 1.9 MB, so the speech partition
+  took over the unused crash-dump space and the whole set runs four percent quicker to fit.
+- A fresh reviewer then grilled the loop with the voice in it and found real things, all fixed: Pengu could answer its
+  own "GOOD DAY OR BAD DAY?" because the "was that me?" check ran too late (now judged the instant the phrase is heard,
+  with a one second window, whole words only so your "no" is not mistaken for its "NOT"); the microphone was learning
+  Pengu's own voice as room noise and going deaf for a while afterwards (learning now pauses while it speaks); the
+  voice task moved to the quieter core so the speech engine cannot make it stutter; "YES? GO ON" became "GO ON" so you
+  can start sooner; the words now start the same instant the screen begins to change.
+
+**Did it work:** compiles (2.7 MB program, 1.5 MB speech); the ADPCM round trip and all 292 clips were checked on the PC
+(`pengu_voice_acted_v2.wav` is sixteen of them, decoded from the exact data on the chip). The speaker behaviour after boot is
+the thing the board has to tell us.
 
 **So what:** the screen and the voice are now the same sentence from the same list, so they can never disagree.
 Flash is a budget like everything else: four bits per sample bought us a whole voice.

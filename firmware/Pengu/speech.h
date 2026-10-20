@@ -88,7 +88,7 @@ static bool speech_say(const char *text)
     job->data = g_speech_blob + SPEECH[i].offset; job->len = SPEECH[i].length;
     audio_volume(g_speech_volume);
     g_speech_busy = true;
-    if (xTaskCreatePinnedToCore(speech_task, "speech", 4096, job, 3, NULL, 1) != pdPASS) { g_speech_busy = false; free(job); return false; }
+    if (xTaskCreatePinnedToCore(speech_task, "speech", 6144, job, 4, NULL, 0) != pdPASS)   // core 0, above the loop, below the speech engine { g_speech_busy = false; free(job); return false; }
     return true;
   }
   Serial.printf("speech: no clip for \"%s\"\n", text);

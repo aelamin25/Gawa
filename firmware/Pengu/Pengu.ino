@@ -106,8 +106,8 @@ static void speak(const char *line) { speech_say(line); }
 // play the mood's little animation (4 frames), ending on frame 0
 static void play(mood_t mood, int sketch, int variant, const char *line)
 {
-  show(mood, sketch, variant, 1, line);          // the words appear...
-  speak(line);                                   // ...and Pengu says them, while the little animation plays
+  show(mood, sketch, variant, 1, line);          // the words appear (the e-paper takes 0.3 s)...
+  speak(line);                                   // ...and Pengu says them the moment they are readable, while the animation plays
   delay(FRAME_MS);
   for (int f = 2; f < ANIM_FRAMES; f++) { show(mood, sketch, variant, f, line); delay(FRAME_MS); }
   show(mood, sketch, variant, 0, line);
@@ -169,6 +169,7 @@ static bool     said_something = false;    // Pengu has replied to something in 
 static int16_t  chat_face[FAMILY_COUNT]; // which drawing each family uses in this conversation (-1 = not chosen yet)
 static void new_faces() { for (int i = 0; i < (int)FAMILY_COUNT; i++) chat_face[i] = -1; }
 static volatile int voice_cmd = -1, voice_phrase = -1;     // set by the speech callback
+static volatile bool voice_during_speech = false;           // the phrase arrived while Pengu was talking (or just after)
 static int      pending_cmd = -1; static uint32_t pending_at = 0;   // something you said just before a chat opened (gear press, "hey pengu")
 
 // "did they talk?" detector, fed by the microphone callback
@@ -227,7 +228,6 @@ static void go_listen(const char *line, bool from_button = false)
   strlcpy(cur_text, line, sizeof(cur_text));
   show(cur_mood, cur_sketch, cur_var, 0, cur_text);     // same face, ear mark on, "I AM LISTENING"
   speak(cur_text);                                      // "I am listening"
-  if (!from_button) delay(300);                 // let the tail of "hey pengu" pass before we count talking
   vad_heard_voice = false; vad_on = true;
   state_until = millis() + LISTEN_WINDOW_MS;
   last_pulse = millis();
@@ -333,7 +333,8 @@ static esp_err_t mic_fill(void *arg, void *out, size_t len, size_t *bytes_read, 
   *bytes_read = len;
 
   float level = (float)((pick ? energy_r : energy_l) / (int64_t)frames);
-  if (!vad_on || g_speech_busy) {                                  // Pengu's own voice does not count as you talking
+  if (g_speech_busy || millis() - g_speech_end < 300) return ESP_OK;   // Pengu's own voice: do not learn it, do not count it
+  if (!vad_on) {
     noise_floor = noise_floor * 0.98f + level * 0.02f;          // learn how loud the room is
   } else {
     noise_floor = noise_floor * 0.998f + level * 0.002f;        // while listening, learn very slowly (a fan or TV must not jam us)
@@ -345,7 +346,10 @@ static esp_err_t mic_fill(void *arg, void *out, size_t len, size_t *bytes_read, 
 
 static void on_voice_event(void *arg, sr_event_t event, int command_id, int phrase_id)
 {
-  if (event == SR_EVENT_COMMAND) { voice_phrase = phrase_id; voice_cmd = command_id; }   // cmd last: loop() reads it first
+  if (event == SR_EVENT_COMMAND) {
+    voice_during_speech = g_speech_busy || (millis() - g_speech_end < 1000);   // judged now, not when loop() gets round to it
+    voice_phrase = phrase_id; voice_cmd = command_id;                          // cmd last: loop() reads it first
+  }
   sr_set_mode(SR_MODE_COMMAND);       // always keep listening
 }
 
@@ -428,9 +432,20 @@ void loop()
   was_pressed = pressed;
 
   // ---- a sentence was recognised
-  if (voice_cmd >= 0 && (g_speech_busy || millis() - g_speech_end < 500)) {
-    voice_cmd = -1;                                                 // that was Pengu talking, not you
-    Serial.println("  (heard myself - ignored)");
+  if (voice_cmd >= 0 && voice_during_speech) {
+    // Pengu was talking (or had just stopped): was that phrase in its own line? "GOOD OR BAD?" must not answer itself,
+    // but you saying "I am sad" over the top of "I am listening" still counts. Whole words only ("no" is not in "NOT").
+    int f = CMD_FAMILY(voice_cmd), t = CMD_TOPIC(voice_cmd); bool mine = false;
+    if (f >= 0 && f < (int)FAMILY_COUNT && t < FAMILIES[f].ntopics) {
+      char said[80], mine_line[80];
+      snprintf(said, sizeof(said), " %s%s ", FAMILIES[f].prefix, FAMILIES[f].topics[t]);
+      snprintf(mine_line, sizeof(mine_line), " %s ", cur_text);
+      for (char *c = said; *c; c++) *c = toupper((unsigned char)*c);
+      for (char *c = mine_line; *c; c++) { *c = toupper((unsigned char)*c); if (!isalnum((unsigned char)*c)) *c = ' '; }
+      mine = strstr(mine_line, said) != NULL;
+    }
+    if (mine) { voice_cmd = -1; Serial.println("  (heard myself - ignored)"); }
+    voice_during_speech = false;
   }
   if (voice_cmd >= 0) {
     int cmd = voice_cmd, ph = voice_phrase; voice_cmd = -1;

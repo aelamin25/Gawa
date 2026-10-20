@@ -109,7 +109,7 @@ static const uint8_t F_WARY[] = { SK_THOUGHTFUL };
 
 // ================================================================ wake
 static const char *T_WAKE[]   = { "hey pengu", "hi pengu", "hello pengu", "okay pengu" };
-static const char *R_LISTEN[] = { "I AM LISTENING", "YES? GO ON", "I AM ALL EARS", "TELL ME" };
+static const char *R_LISTEN[] = { "I AM LISTENING", "GO ON", "I AM ALL EARS", "TELL ME" };   // short, so you can start talking sooner
 
 // ================================================================ talking to Pengu
 static const char *T_HOWRU[]  = { "how are you", "how is it going", "how are you doing", "are you okay", "what is up", "how was your day" };

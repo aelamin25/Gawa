@@ -24,18 +24,19 @@ OUT = os.path.join(ROOT, "firmware", "Pengu", "sounds.h")
 WAVS = os.path.join(ROOT, "artwork", "sounds")
 WORDS = { "oh": "Oh!", "big": "Big!", "yay": "Yay!", "woo": "Woo!", "hmm": "Hmm.", "phew": "Phew!", "grr": "Grr!",
           "ooh": "Ooh!", "eww": "Eww!", "night": "Night night.", "hello": "Hello!", "okay": "Okay!", "yes": "Yes?", "sorry": "Sorry." }
-PITCH = 1.3        # higher = smaller penguin (1.0 = the voice as it is). Pitch only: the words do not get faster
-TEMPO = 0.85       # lower = slower, gentler words
-VOLUME_DB = -6     # the clips themselves are fairly loud; VOICE_VOLUME in Pengu.ino sets how loud the speaker is
-BITS = 8           # 8-bit era texture, mixed in lightly so it stays soft (fewer bits = crunchier)
-CRUNCH = 0.3       # how much of the 8-bit texture to mix in (0 = clean voice, 1 = full crunch)
+PITCH = 1.25       # higher = smaller penguin (1.0 = the voice as it is). Pitch only: the words do not get faster
+TEMPO = 0.9        # lower = slower, gentler words
+BITS = 8           # 8-bit era texture, mixed in lightly so the words stay clear (fewer bits = crunchier)
+CRUNCH = 0.15      # how much of the 8-bit texture to mix in (0 = clean voice, 1 = full crunch)
+# the board's speaker is tiny: it cannot do deep sounds and it is quiet, so the words are squeezed (compressed) and
+# pushed up close to full scale; VOICE_VOLUME in Pengu.ino then sets how loud it actually is
 RATE = 16000
 # chiptune blips: list of (frequency Hz, length s); 0 Hz = a rest
 BLIPS = { "listen": [(587, 0.12), (880, 0.18)],
           "heart":  [(523, 0.14), (659, 0.14), (784, 0.30)],
           "sleep":  [(784, 0.16), (587, 0.16), (392, 0.34)] }
 
-def blip(notes, level=0.22):
+def blip(notes, level=0.45):
     """soft triangle-wave notes (a rounder, gentler chip sound than a square) with a slow fade, 16 kHz 16-bit mono"""
     out = []
     for freq, secs in notes:
@@ -57,7 +58,9 @@ def main():
         subprocess.run(["piper", "-m", VOICE, "-f", raw, "--length-scale", "1.1"], input=text.encode(), check=True, capture_output=True)
         af = (f"rubberband=pitch={PITCH}:tempo={TEMPO},aresample=16000,"
               "silenceremove=start_periods=1:start_threshold=-40dB,areverse,silenceremove=start_periods=1:start_threshold=-40dB,areverse,"
-              f"acrusher=bits={BITS}:samples=2:mode=lin:mix={CRUNCH},lowpass=f=3800,afade=t=in:d=0.02,apad=pad_dur=0.08,volume={VOLUME_DB}dB")
+              f"acrusher=bits={BITS}:samples=2:mode=lin:mix={CRUNCH},highpass=f=250,lowpass=f=6000,"
+              "acompressor=threshold=-20dB:ratio=4:attack=5:release=80:makeup=10dB,alimiter=limit=0.85:level=false,"
+              "afade=t=in:d=0.015,apad=pad_dur=0.08")
         subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", raw, "-af", af, "-ac", "1", "-ar", "16000", wav], check=True)
         pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", wav, "-f", "s16le", "-ac", "1", "-ar", "16000", "-"], check=True, capture_output=True).stdout
         os.remove(raw)

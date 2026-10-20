@@ -1,5 +1,5 @@
 /*
- * Pengu v12 - a pencil-sketch penguin you can have a conversation with, fully offline (Waveshare ESP32-S3-ePaper-1.54, V2)
+ * Pengu v13 - a pencil-sketch penguin you can have a conversation with, fully offline (Waveshare ESP32-S3-ePaper-1.54, V2)
  *
  * How it understands: it listens for short chunks that carry the feeling ("was bad", "so tired", "cat died")
  * inside whatever you say. One-word answers ("bad", "fine") only count right after Pengu asks "good or bad?".
@@ -156,6 +156,7 @@ static bool     said_something = false;    // Pengu has replied to something in 
 static int16_t  chat_face[FAMILY_COUNT]; // which drawing each family uses in this conversation (-1 = not chosen yet)
 static void new_faces() { for (int i = 0; i < (int)FAMILY_COUNT; i++) chat_face[i] = -1; }
 static volatile int voice_cmd = -1, voice_phrase = -1;     // set by the speech callback
+static int      pending_cmd = -1; static uint32_t pending_at = 0;   // something you said just before a chat opened (gear press, "hey pengu")
 
 // "did they talk?" detector, fed by the microphone callback
 static volatile bool     vad_on = false;
@@ -201,7 +202,7 @@ static void heard_you()
   show(cur_mood, cur_sketch, cur_var, 0, cur_text);
 }
 
-static void go_listen(const char *line)
+static void go_listen(const char *line, bool from_button = false)
 {
   if (!in_chat) { new_faces(); said_something = false; } // a new conversation: faces may be picked afresh
   if (asleep || state == RESTING) set_face(MOOD_IDLE, -1, 0, line);   // waking up from rest: the calm face
@@ -209,12 +210,18 @@ static void go_listen(const char *line)
   state = LISTENING; asleep = false; in_chat = true; follow_up = false; retries = 0; awaiting = Q_NONE;
   vad_on = false; listen_line = line;
   strlcpy(cur_text, line, sizeof(cur_text));
-  show(cur_mood, cur_sketch, cur_var, 0, cur_text);     // same face, ear mark on, "I AM LISTENING"
   say("LISTEN");                                        // a little rising blip so you know it is listening
-  delay(300);                                   // let the tail of "hey pengu" pass before we count talking
+  show(cur_mood, cur_sketch, cur_var, 0, cur_text);     // same face, ear mark on, "I AM LISTENING"
+  if (!from_button) delay(300);                 // let the tail of "hey pengu" pass before we count talking
   vad_heard_voice = false; vad_on = true;
   state_until = millis() + LISTEN_WINDOW_MS;
   last_pulse = millis();
+  if (pending_cmd >= 0 && millis() - pending_at < 3000) {   // you already said the thing ("I am sad") as you pressed: answer it now
+    int cmd = pending_cmd; pending_cmd = -1;
+    Serial.println("Heard that just before the chat opened -> answering it");
+    react(cmd);
+  }
+  pending_cmd = -1;
 }
 
 static void react(int command_id)
@@ -333,7 +340,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(300);
-  Serial.println("\nPengu v12 starting...");
+  Serial.println("\nPengu v13 starting...");
   randomSeed(esp_random());
   new_faces();
   pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP);
@@ -348,7 +355,7 @@ void setup()
 
   build_phrases();
   audio_bsp_init();
-  say("LISTEN");                                // a little hello blip at boot: if you hear this, the speaker works
+  say("LISTEN"); say("HELLO");                  // a blip and a word at boot: if you hear both, the speaker works
   esp_err_t err = sr_start(mic_fill, nullptr, SR_CHANNELS_MONO, SR_MODE_COMMAND, "M",
                            all_phrases, phrase_count, on_voice_event, nullptr);
   if (err != ESP_OK) {
@@ -388,7 +395,12 @@ void loop()
   static uint32_t last_edge = 0;
   if (pressed != was_pressed && now - last_edge < 50) pressed = was_pressed;   // debounce: ignore edges within 50 ms
   if (pressed != was_pressed) last_edge = now;
-  if (pressed && !was_pressed) { pressed_since = now; long_done = false; }
+  if (pressed && !was_pressed) {
+    pressed_since = now; long_done = false;
+    Serial.println("Gear pressed -> new conversation");
+    in_chat = false;                                   // a fresh start, even mid chat
+    go_listen(R_LISTEN[pick_different(N(R_LISTEN), &last_line)], true);   // listens the moment you press, not when you let go
+  }
   if (pressed && !long_done && now - pressed_since > 1000) {
     long_done = true;
     static int step = 0;
@@ -397,11 +409,6 @@ void loop()
     int fam = family_of(demo[step]);
     if (fam >= 0) react(CMD_ID(fam, 0));
     step = (step + 1) % N(demo);
-  }
-  if (!pressed && was_pressed && !long_done && now - pressed_since >= 40) {
-    Serial.println("Gear pressed -> new conversation");
-    in_chat = false;                                   // a fresh start, even mid chat
-    go_listen(R_LISTEN[pick_different(N(R_LISTEN), &last_line)]);
   }
   was_pressed = pressed;
 
@@ -434,7 +441,8 @@ void loop()
     } else if (in_chat || has_name || (ends && (state == REACTED || FAMILIES[fam].mood == MOOD_SLEEP))) {   // "thank you" right after a chat, "good night" any time
       react(cmd);
     } else {
-      Serial.println("  (ignored - say Hey Pengu first)");
+      Serial.println("  (no chat open - kept for 3 s in case you press the gear or say Hey Pengu)");
+      pending_cmd = cmd; pending_at = now;
     }
   }
 

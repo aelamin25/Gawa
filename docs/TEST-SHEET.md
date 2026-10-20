@@ -170,3 +170,11 @@ Pass = 8 of 9.
 | 84 | "yes" | A small "big" with "BIG HUG. SQUEEZE" |
 | 85 | Say something it does not know, then wait | The three-note jingle with the heart |
 | 86 | Too loud or too quiet? | Tell me; it is one number (`VOICE_VOLUME`) |
+
+## Quick test (v13)
+
+| # | Do this | Should happen |
+|---|---|---|
+| 87 | Plug in | After WAKING UP: a rising blip, then a small "hello" |
+| 88 | Press the gear and say "I am sad" straight away, finger still on the button | Sad face, "oh", "OH NO. WANT A HUG?" |
+| 89 | Say "yes" | Heart-eyes face, "big", "BIG HUG. SQUEEZE" |

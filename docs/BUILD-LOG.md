@@ -354,6 +354,30 @@ paragraph on the screen.
 
 ---
 
+## Step 18 – v13: words you can hear, and the gear listens the moment you press (20 Oct 2026)
+
+**What we wanted:** v12 on the board: the blips play, the penguins are whole, but the spoken words could not be heard.
+And when M pressed the gear and said "I am sad" straight away, Pengu missed it.
+
+**What we did:**
+- The words: the clips were soft, muffled and low, three things a one inch speaker cannot do. They are now cleaner
+  (much less 8-bit crunch), cut below 250 Hz where the speaker is silent anyway, squeezed with a compressor and pushed up
+  to -3 dB, so the speaker gets something it can actually move with. The blips are louder to match. At boot Pengu now
+  plays the blip AND says "hello", so you can tell in one second whether words come through at all.
+- The gear: the chat used to start when you let go of the button. If you spoke while your finger was still on it,
+  Pengu heard you but threw it away ("say Hey Pengu first"). Now the chat starts the moment you press, the blip plays
+  first and the mic is armed at once (no 300 ms pause, that was for the tail of "hey pengu"), and anything Pengu heard
+  in the three seconds before a chat opened is answered the moment it opens. So "press, I am sad" works whichever order
+  the two arrive in.
+
+**Did it work:** compiles; every clip measured (words peak -3 dB, blips -8 dB). Needs the board to confirm the words
+are audible now. If "hello" at boot is still silent while the blip plays, the next suspect is the speaker's low
+frequency limit and we go higher in pitch.
+
+**So what:** a tiny speaker is a different instrument from headphones; test on the real thing, early.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.

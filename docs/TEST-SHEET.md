@@ -55,7 +55,7 @@ Score: ____ / 30      Date: ________      Notes on anything weird:
 | 39 | (Hey Gawa) Phew, it is over | Relief | | |
 | 40 | (Hey Gawa) I hate Mondays | Disgusted: "MONDAYS. THE WORST" | | |
 
-## Conversation test for v8
+## Conversation test (v8 and later)
 
 1. Say "Hey Gawa". Ears up.
 2. Say "I passed my driving test". Proud face. A small "(((" mark top left means it is still listening.
@@ -65,3 +65,10 @@ Score: ____ / 30      Date: ________      Notes on anything weird:
 6. Say "hey gawa how are you" in one breath. It should answer straight away.
 
 Pass = all six behave as written.
+
+## Day question test (v9)
+
+1. Say "Hey Gawa, how are you". It should answer and ask "GOOD OR BAD?".
+2. Say "pretty good". Happy face, "YAY! GLAD IT WAS GOOD".
+3. Say "Hey Gawa, how are you", then mumble nonsense. Magnifying glass face, "MY EARS! ONE MORE TIME?". No black flash.
+4. Say "not great". Sad face, "OH NO. BIG HUG".

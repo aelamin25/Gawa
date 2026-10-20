@@ -31,7 +31,7 @@ static const char *R_LISTEN[] = { "I AM LISTENING", "YES? GO ON", "I AM ALL EARS
 // ================================================================ talking TO Gawa (works any time)
 static const char *T_HOWRU[]  = { "how are you", "hey how are you", "hi how are you", "how are you gawa", "gawa how are you", "hey gawa how are you",
                                   "how are you doing", "how is it going", "are you okay", "are you okay gawa", "what is up", "how was your day" };
-static const char *R_HOWRU[]  = { "I AM GREAT! HOW ARE YOU?", "HAPPY NOW YOU ARE HERE. YOU?", "GOOD! HOW WAS YOUR DAY?", "ALL GOOD. AND YOU?" };
+static const char *R_HOWRU[]  = { "GREAT! HOW WAS YOUR DAY? GOOD OR BAD?", "HAPPY YOU ARE HERE. GOOD DAY OR BAD DAY?", "ALL GOOD! AND YOUR DAY, GOOD OR BAD?" };
 static const char *T_NAME[]   = { "what is your name", "who are you", "what are you" };
 static const char *R_NAME[]   = { "I AM GAWA, YOUR PENGUIN", "GAWA! NICE TO MEET YOU", "A PENGUIN CALLED GAWA" };
 static const char *T_LIKEME[] = { "do you like me", "do you love me", "are we friends", "am I your friend" };
@@ -47,19 +47,27 @@ static const char *R_JOKE[]   = { "I ONLY KNOW PENGUIN JOKES", "WHAT DO I WEAR? 
 static const char *T_THANKS[] = { "thank you", "thank you gawa", "thanks", "thanks gawa", "I am grateful", "I appreciate you" };
 static const char *R_THANKS[] = { "ANY TIME, FRIEND", "THAT IS WHAT I AM FOR", "YOU ARE WELCOME" };
 static const char *T_MORNING[] = { "good morning", "good morning gawa", "morning gawa", "I am home", "I am back", "hello" };
-static const char *R_MORNING[] = { "HELLO FRIEND!", "GOOD TO SEE YOU", "I MISSED YOU", "HI HI!" };
+static const char *R_MORNING[] = { "HELLO FRIEND! GOOD DAY OR BAD DAY?", "GOOD TO SEE YOU! HOW WAS IT, GOOD OR BAD?", "I MISSED YOU! GOOD DAY OR BAD?" };
 static const char *T_NIGHT[]  = { "good night", "good night gawa", "night night", "I am going to bed", "see you tomorrow", "goodbye gawa" };
 static const char *R_NIGHT[]  = { "NIGHT NIGHT", "SLEEP WELL FRIEND", "SEE YOU TOMORROW" };
 static const char *T_STOP[]   = { "stop", "that is all", "I have finished", "we are done", "bye gawa", "okay bye" };
 static const char *R_STOP[]   = { "OKAY. I AM HERE IF YOU NEED ME", "BYE FOR NOW", "OKAY, FRIEND" };
 
+// ================================================================ answers to "good day or bad day?"
+static const char *T_DAY_ANS_GOOD[] = { "good", "great", "amazing", "pretty good", "it was good", "really good", "fantastic", "brilliant", "good day" };
+static const char *R_DAY_ANS_GOOD[] = { "YAY! GLAD IT WAS GOOD", "A GOOD ONE! LOVE THAT", "GOOD DAYS ARE THE BEST" };
+static const char *T_DAY_ANS_BAD[]  = { "bad", "terrible", "not great", "rubbish", "awful", "it was bad", "not good", "horrible", "bad day" };
+static const char *R_DAY_ANS_BAD[]  = { "OH NO. BIG HUG", "SORRY IT WAS BAD. I AM HERE", "TOMORROW IS A NEW ONE" };
+static const char *T_DAY_ANS_MEH[]  = { "okay", "fine", "not bad", "so so", "boring", "long", "busy", "normal", "alright" };
+static const char *R_DAY_ANS_MEH[]  = { "OKAY DAYS COUNT TOO", "FAIR ENOUGH. I AM HERE", "A NORMAL DAY IS FINE BY ME" };
+
 // ================================================================ someone or something is lost / hurt (sad)
-static const char *T_LOVED[] = { "cat", "dog", "hamster", "rabbit", "pet", "gran", "grandad", "mum", "dad", "brother", "sister", "friend" };
-static const char *E_LOSS[]  = { " died", " passed away", " is sick", " is in hospital" };
+static const char *T_LOVED[] = { "cat", "dog", "hamster", "pet", "gran", "grandad", "mum", "dad", "brother", "sister", "friend" };
+static const char *E_LOSS[]  = { " died", " is sick", " is in hospital" };
 static const char *R_LOSS[]  = { "SO SORRY ABOUT YOUR %s", "OH NO. POOR %s", "YOUR %s. I AM SO SORRY", "THAT IS SO HARD. BIG HUG" };
 
 // ================================================================ lost / broke / failed (sad)
-static const char *T_THINGS[] = { "phone", "keys", "wallet", "job", "game", "match", "money", "bike" };
+static const char *T_THINGS[] = { "phone", "keys", "wallet", "job", "game", "money" };
 static const char *R_LOSTIT[] = { "OH NO, YOUR %s!", "LOSING YOUR %s IS ROUGH", "UGH. I FEEL THAT" };
 static const char *T_BROKE[]  = { "phone", "arm", "leg", "bike", "laptop", "heart" };
 static const char *R_BROKE[]  = { "OUCH, YOUR %s!", "OH NO, NOT YOUR %s", "THAT IS BAD LUCK. SORRY" };
@@ -68,11 +76,11 @@ static const char *R_FAILED[] = { "YOUR %s. THAT STINGS", "SORRY ABOUT THE %s", 
 
 // ================================================================ good news (happy / proud)
 static const char *R_PASSED[] = { "YOU PASSED YOUR %s!", "YES! THE %s IS DONE!", "SO PROUD OF YOU", "YOU DID IT! WOO" };
-static const char *T_GOT[]    = { "the job", "a new job", "a promotion", "paid", "an A", "good grades", "a puppy", "a kitten", "a gift", "engaged" };
+static const char *T_GOT[]    = { "the job", "a new job", "a promotion", "paid", "an A", "a puppy", "a kitten", "a gift", "engaged" };
 static const char *R_GOT[]    = { "WOW, %s! AMAZING", "YAY! TELL ME MORE", "THAT IS GREAT NEWS", "BEST NEWS ALL DAY" };
 static const char *T_WON[]    = { "the game", "my game", "the match", "the race", "a prize", "the final" };
 static const char *R_WON[]    = { "YOU WON %s!", "CHAMPION! WOO", "SO PROUD OF YOU", "HIGH FIVE!" };
-static const char *T_AM_HAPPY[] = { "happy", "so happy", "really happy", "excited", "so excited", "glad", "thrilled", "in love", "having fun", "doing great" };
+static const char *T_AM_HAPPY[] = { "happy", "so happy", "really happy", "excited", "so excited", "glad", "in love", "having fun" };
 static const char *R_HAPPY[]  = { "YAY! TELL ME MORE", "THAT IS GREAT!", "SO HAPPY FOR YOU", "I LOVE THAT", "HIGH FIVE!", "YOU DESERVE IT" };
 static const char *T_DAY_GOOD[] = { "good", "great", "amazing", "fun", "lovely", "brilliant", "perfect" };
 static const char *R_DAY_GOOD[] = { "A %s DAY! LOVE IT", "YAY! WHAT WAS BEST?", "THAT MAKES ME HAPPY TOO" };
@@ -97,7 +105,7 @@ static const char *R_ANGRY[]  = { "GRR! WHO DID WHAT?", "THAT IS NOT FAIR", "I A
 static const char *T_ANGRY_SINGLE[] = { "they shouted at me", "I had a fight", "I got in trouble", "that is not fair", "I hate this", "I am so done" };
 
 static const char *T_SCARED[] = { "scared", "so scared", "afraid", "terrified", "frightened" };
-static const char *T_SCARED_OF[] = { "the dark", "spiders", "flying", "the dentist", "tomorrow", "failing", "being alone" };
+static const char *T_SCARED_OF[] = { "the dark", "spiders", "the dentist", "tomorrow", "being alone" };
 static const char *R_SCARED[] = { "I AM RIGHT HERE WITH YOU", "DEEP BREATH. YOU ARE SAFE", "SCARY. I AM NOT GOING ANYWHERE" };
 static const char *R_SCARED_OF[] = { "%s IS SCARY. I AM HERE", "WE CAN FACE %s TOGETHER", "DEEP BREATH. YOU ARE SAFE" };
 
@@ -120,7 +128,7 @@ static const char *R_MISCHIEF[] = { "OOH. SPILL IT", "I WILL NEVER TELL", "HEHE.
 
 static const char *T_THINK_ABOUT[] = { "mum", "dad", "work", "school", "money", "the future", "my job", "life", "tomorrow", "moving", "love" };
 static const char *R_THINK_ABOUT[] = { "HMM, %s. GO ON", "BIG THOUGHTS ABOUT %s", "TELL ME MORE", "I AM THINKING TOO" };
-static const char *T_SHOULD_I[]    = { "go", "stay", "quit", "move", "call her", "call him", "text them", "say yes", "give up" };
+static const char *T_SHOULD_I[]    = { "go", "stay", "quit", "move", "call them", "say yes", "give up" };
 static const char *R_SHOULD_I[]    = { "HMM. WHAT DOES YOUR GUT SAY?", "BIG CHOICE. TAKE YOUR TIME", "I AM WITH YOU EITHER WAY" };
 static const char *T_THINK_SINGLE[] = { "I am thinking", "just thinking", "thinking out loud", "let me think", "I wonder", "I have been thinking", "I have an idea", "I need a plan", "maybe", "what a day" };
 static const char *R_THINK[]        = { "HMM, TELL ME MORE", "GO ON, I AM HERE", "INTERESTING...", "TAKE YOUR TIME", "WHAT ELSE?" };
@@ -134,7 +142,7 @@ static const char *T_SHOCKED[] = { "you will not believe this", "oh my god", "no
 static const char *R_SHOCKED[] = { "WHAT?! TELL ME", "NO WAY. GO ON", "I AM ON THE EDGE OF MY SEAT" };
 
 static const char *T_DISGUST[] = { "that is gross", "that is disgusting", "yuck", "eww", "that was nasty" };
-static const char *T_HATE[]    = { "mondays", "broccoli", "homework", "traffic", "my job", "the rain", "mornings" };
+static const char *T_HATE[]    = { "mondays", "homework", "traffic", "my job", "the rain" };
 static const char *R_DISGUST[] = { "EWW. AGREED", "YUCK. I FELT THAT", "GROSS. TELL ME ANYWAY" };
 static const char *R_HATE[]    = { "%s. THE WORST", "UGH, %s. SAME", "WE CAN HATE %s TOGETHER" };
 
@@ -163,6 +171,9 @@ static const Family FAMILIES[] = {
   { MOOD_GRATEFUL,   "",                     T_THANKS, N(T_THANKS),     E_NONE, 1,        R_THANKS, N(R_THANKS), true },
   { MOOD_HAPPY,      "",                     T_MORNING, N(T_MORNING),   E_NONE, 1,        R_MORNING, N(R_MORNING), false },
   { MOOD_SLEEP,      "",                     T_NIGHT, N(T_NIGHT),       E_NONE, 1,        R_NIGHT, N(R_NIGHT), true }, // 10
+  { MOOD_HAPPY,      "",                     T_DAY_ANS_GOOD, N(T_DAY_ANS_GOOD), E_NONE, 1, R_DAY_ANS_GOOD, N(R_DAY_ANS_GOOD), false },
+  { MOOD_SAD,        "",                     T_DAY_ANS_BAD, N(T_DAY_ANS_BAD),   E_NONE, 1, R_DAY_ANS_BAD, N(R_DAY_ANS_BAD), false },
+  { MOOD_PEACEFUL,   "",                     T_DAY_ANS_MEH, N(T_DAY_ANS_MEH),   E_NONE, 1, R_DAY_ANS_MEH, N(R_DAY_ANS_MEH), false },
   { MOOD_SAD,        "my ",                  T_LOVED, N(T_LOVED),       E_LOSS, N(E_LOSS), R_LOSS, N(R_LOSS), false },
   { MOOD_SAD,        "I lost my ",           T_THINGS, N(T_THINGS),     E_NONE, 1,        R_LOSTIT, N(R_LOSTIT), false },
   { MOOD_SAD,        "I broke my ",          T_BROKE, N(T_BROKE),       E_NONE, 1,        R_BROKE, N(R_BROKE), false },
@@ -214,7 +225,7 @@ static const Family FAMILIES[] = {
 #define CMD_TOPIC(id)  ((id) % 64)
 
 // ================================================================ what Gawa says when it is unsure
-static const char *R_DIDNT_HEAR[] = { "SORRY, SAY THAT AGAIN?", "HMM? ONE MORE TIME", "I DID NOT CATCH THAT" };
-static const char *R_GIVE_UP[]    = { "TRY SHORTER WORDS", "I WILL LISTEN BETTER NEXT TIME" };
+static const char *R_DIDNT_HEAR[] = { "MY EARS! ONE MORE TIME?", "I MISSED THAT. SAY IT SIMPLY?", "HMM? TRY A FEW WORDS" };
+static const char *R_GIVE_UP[]    = { "I DID NOT GET IT, BUT I AM HERE", "STILL HERE. BIG HUG", "WE CAN TRY AGAIN LATER" };
 static const char *R_NOTHING[]    = { "I AM HERE WHEN YOU NEED ME", "OKAY. I AM AROUND" };
 static const char *LINE_IDLE = "SAY HEY GAWA";

@@ -152,6 +152,27 @@ close it. Then it is "Hey Gawa" again. 52 patterns, 397 sentences.
 
 ---
 
+## Step 11 – v9: no flashes, better questions, and a tidy folder (20 Oct 2026)
+
+**What we wanted:** the first real test video showed two problems. The screen flashed black in the middle of a chat
+(it looked like a crash), and Gawa asked "how was your day?" and then could not understand the answer.
+
+**What we did:**
+- The flashing is the e-paper's "clean" refresh. It now only happens when Gawa goes back to resting, never mid chat.
+- Gawa only asks questions it can hear the answers to: "GOOD DAY OR BAD DAY?" And it learned the 27 ways people answer
+  that: "good", "pretty good", "not great", "rubbish", "fine", "long", "busy"...
+- When it still misses, it stays playful: magnifying glass face, "MY EARS! ONE MORE TIME?", and after two misses
+  "I DID NOT GET IT, BUT I AM HERE" instead of a telling off.
+- Tidied the whole folder for GitHub: `docs/` (diary, brief, tests), `firmware/Gawa/` (the program),
+  `releases/` (files to load), `artwork/` (drawings), `tools/`, `extras/`. The README now explains Gawa like you are nine.
+
+**Did it work:** compiles, 398 sentences from 55 patterns. Waiting for the next video.
+
+**So what:** a companion that asks a question it cannot understand the answer to is a trap. Now every question Gawa asks
+has answers it knows. And anyone landing on GitHub can find their way around.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.

@@ -1,10 +1,10 @@
 """
 make_sketches.py - turn drawings into sketches.h for Gawa.
 
-How to use (from the Tamagotchi folder):
+How to use (from the main Gawa folder):
     python3 tools/make_sketches.py
 
-It looks in the "sketches" folder for these files and makes Tamagotchi/sketches.h:
+It looks in the "artwork/sketches" folder for these files and makes firmware/Gawa/sketches.h:
     one PNG per name in NAMES below (happy.png, confused.png, ... shy.png)
 Each picture can be any size; it is shrunk to fit 200 x 150 and turned black-and-white with
 dithering (so pencil shading keeps its texture). Light paper (anything brighter than 215/255) becomes white.
@@ -44,11 +44,11 @@ def to_bits(path):
 def main():
     arrays = []
     for name in NAMES:
-        path = os.path.join(ROOT, "sketches", name + ".png")
+        path = os.path.join(ROOT, "artwork", "sketches", name + ".png")
         if not os.path.exists(path):
             sys.exit(f"missing {path}")
         arrays.append((name, to_bits(path)))
-    with open(os.path.join(ROOT, "Tamagotchi", "sketches.h"), "w") as f:
+    with open(os.path.join(ROOT, "firmware", "Gawa", "sketches.h"), "w") as f:
         f.write("// sketches.h - pencil-sketch penguin faces, 200x150 pixels, 1 bit per pixel (1 = black), 25 bytes per row.\n")
         f.write("// Made by tools/make_sketches.py from the PNGs in the sketches folder. Do not edit by hand.\n#pragma once\n#include <stdint.h>\n\n")
         f.write("#define SKETCH_W 200\n#define SKETCH_H 150\n\n")
@@ -59,7 +59,7 @@ def main():
             f.write("};\n\n")
         f.write("enum { " + ", ".join(("SK_" + n.upper() + (" = 0" if i == 0 else "")) for i, n in enumerate(NAMES)) + ", SK_COUNT };\n")
         f.write("static const uint8_t *SKETCHES[SK_COUNT] = { " + ", ".join("SKETCH_" + n.upper() for n in NAMES) + " };\n")
-    print("wrote Tamagotchi/sketches.h with", len(arrays), "faces")
+    print("wrote firmware/Gawa/sketches.h with", len(arrays), "faces")
 
 if __name__ == "__main__":
     main()

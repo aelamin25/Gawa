@@ -1,5 +1,5 @@
 /*
- * Gawa v8 - a pencil-sketch penguin you can have a conversation with
+ * Gawa v9 - a pencil-sketch penguin you can have a conversation with
  *
  * Conversation works like a smart speaker: say "Hey Gawa" once to start. After each reply Gawa keeps
  * listening for about 10 seconds, so you can just keep talking. The conversation ends after 10 seconds
@@ -43,6 +43,7 @@
 static epaper_driver_display *epd = nullptr;
 static board_power_bsp_t board_power(EPD_PWR_PIN, Audio_PWR_PIN, VBAT_PWR_PIN);
 static int partial_refreshes = 0;
+static bool allow_full_refresh = false;   // the flashing clean refresh only happens when Gawa goes back to resting
 
 static void put_black_pixel(int x, int y) { epd->EPD_DrawColorPixel(x, y, DRIVER_COLOR_BLACK); }
 
@@ -52,7 +53,7 @@ static void show(mood_t mood, int variant, int frame, const char *line)
   last_mood = mood; last_var = variant; last_text = line;
   epd->EPD_Clear();
   draw_face(mood, variant, frame, line, put_black_pixel);
-  if (partial_refreshes >= FULL_REFRESH_EVERY) {
+  if (allow_full_refresh && partial_refreshes >= FULL_REFRESH_EVERY) {
     epd->EPD_Init(); epd->EPD_Display(); epd->EPD_DisplayPartBaseImage(); epd->EPD_Init_Partial();
     partial_refreshes = 0;
   } else {
@@ -134,9 +135,11 @@ static int pick_different(int count, int *last)
 static void go_rest(const char *line)
 {
   g_chat_dot = false;
+  allow_full_refresh = true;            // a good moment to clean the screen
   state = RESTING; vad_on = false; retries = 0; asleep = false; in_chat = false;
   rest_since = last_blink = millis(); rest_line = line;
   show(MOOD_IDLE, 0, 0, line);
+  allow_full_refresh = false;
 }
 
 static void go_listen(const char *line)
@@ -275,11 +278,11 @@ void loop()
         state_until = now + LISTEN_WINDOW_MS;
         vad_heard_voice = false;
         listen_line = R_DIDNT_HEAR[pick_different(N(R_DIDNT_HEAR), &last_line)];
-        play(MOOD_THINKING, 2, listen_line);
+        play(MOOD_CURIOUS, 0, listen_line);     // magnifying glass: "let me listen harder"
         last_tilt = millis();
       } else {
         Serial.println("Still no match -> giving up politely");
-        go_rest(R_GIVE_UP[pick_different(N(R_GIVE_UP), &last_line)]);   // go_rest closes the conversation
+        go_rest(R_GIVE_UP[pick_different(N(R_GIVE_UP), &last_line)]);   // go_rest closes the conversation (calm face, not a telling off)
       }
     } else if (!vad_heard_voice && (int32_t)(now - state_until) >= 0) {
       if (follow_up) {                      // 10 s of quiet after a reply: the conversation ends, face stays up

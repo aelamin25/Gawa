@@ -119,3 +119,18 @@ Say "Hey Gawa" first each time. Watch that the face changes between tries of the
 | 61 | Hold the gear button for one second | "SAY HEY GAWA. THEN TELL ME HOW YOU FEEL", gone after 20 s |
 
 Pass = 9 of 11.
+
+## The loop test (v11)
+
+| # | Do this | Should happen |
+|---|---|---|
+| 62 | Say "Hey Gawa" | Same face as before, "(((" mark top left, "I AM LISTENING". The face must not change. |
+| 63 | Talk for a few seconds about anything | The "(((" mark pulses while you talk |
+| 64 | Say something it cannot know ("the bus was late again") and stop | Same face, "MM HMM. GO ON". Then, if you stop or say more it does not know: same face, a heart, "I HEAR YOU. I AM HERE" |
+| 65 | "Hey Gawa", "I am sad" | Sad face now (and only now) |
+| 66 | Keep talking after the reply with words it does not know | Sad face stays, "I HEAR YOU" with a heart, chat closes |
+| 67 | Press the gear button once, mid chat or not | New conversation: "(((" mark, "I AM LISTENING", face unchanged |
+| 68 | Let three chats end, watch the screen | No black flash at any point |
+| 69 | Say "good night Gawa" | One black flash, then the sleepy face |
+
+Pass = all of 62 to 69.

@@ -216,6 +216,55 @@ chunk had to earn its place.
 
 ---
 
+## Step 13 – test video 3: it works, but it feels empty (20 Oct 2026)
+
+**What we wanted:** to see the complete v10 in a real one minute chat, with the phone transcript next to it.
+
+**What we did:** flashed v10 and talked to it: "Hey Gawa, how are you? It was good", "I spent time having fun",
+"Hey Gawa", "I am sad", "can you please help me?".
+
+**Did it work:** yes and no. It never crashed, never complained, and the faces are lovely. But "it was good" was said
+before Gawa had asked, so it was lost; "having fun" and "I am sad" are not chunks it knows; "help me" got nothing; and
+six different faces went by in a minute while only two of them meant anything. The one moment that matters, "I talked
+and it heard me", never clearly happened.
+
+**So what:** more faces and more chunks did not make it a better companion. The shape of the conversation did not
+change, and that is the thing to fix. Rule for v11: the face only changes when the feeling changes, every conversation
+ends with Gawa showing it heard you, the gear button starts a chat, and the black refresh only happens at sleep time.
+The plan is in `docs/HANDOVER.md`.
+
+---
+
+## Step 14 – v11: the face only changes when the feeling changes (20 Oct 2026)
+
+**What we wanted:** fix the three things test video 3 showed, and nothing else: moody face swaps, an empty feeling at the
+end of a chat, and the black flash. Plus: a gear press should start a conversation.
+
+**What we did:**
+- The face now only changes when Gawa understands a feeling. "Hey Gawa", listening, and "MM HMM. GO ON" all keep the
+  face that is already on screen and change only the words and the "(((" ear mark. Each family picks one drawing per
+  conversation instead of a new one every reply.
+- The ear mark pulses (one, two, three arcs) while you are talking, so you can see it is hearing you.
+- Every conversation where you spoke ends with the "I heard you" moment: same face, a little heart, "I HEAR YOU. I AM
+  HERE". Never a shrug, never silence. The chat then closes and the face stays for two minutes.
+- Gear button: a short press starts a new conversation (same as "Hey Gawa", works mid chat too). Holding it for a
+  second steps through demo moods. Debounced.
+- The black full refresh now only happens at boot, on "good night", when Gawa falls asleep after ten quiet minutes, and
+  about once an hour while asleep. Never when a chat ends.
+- Plain phrases added: "I am sad", "I am happy", "I am tired", "I am angry", "having fun", and a "help me" family
+  ("I AM HERE. TELL ME"). Eight of the least likely chunks dropped to stay under the chip's 400. 64 families, 397 chunks.
+- Only "good night" works without the name or an open chat now; "stop now" said to someone else no longer changes the face.
+- Reviewed by a fresh reviewer; ten findings fixed (faces pre-set to the happy drawing at boot, pulse redraws after a
+  reply, no debounce, quiet after "mm hmm" went to rest instead of "I heard you", wake word counted as talking).
+
+**Did it work:** compiles, the whole conversation rendered on the PC as screens (`artwork/previews/v11_one_conversation.png`):
+same happy face through listening and "mm hmm", heart at the end, sad face only when "I am sad" is understood. Waiting
+for the next video.
+
+**So what:** a calm face is a listening face. Gawa should move less, not more, when you are talking.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.

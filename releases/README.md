@@ -4,7 +4,8 @@ Ready made files to load onto the board. Always use the newest one. Steps are in
 
 | File | What it does |
 |---|---|
-| `Gawa_v10_full_8MB.bin` | **Newest.** Listens for the feeling inside any sentence ("my day was bad" works), 63 feeling families, 99 hand drawn faces, stays present when it misses. Hold the gear button for the help line. |
+| `Gawa_v11_full_8MB.bin` | **Newest.** The face only changes when the feeling changes, "I heard you" with a heart at the end of every chat, gear press starts a conversation, no black flash between chats. |
+| `Gawa_v10_full_8MB.bin` | Listens for the feeling inside any sentence ("my day was bad" works), 63 feeling families, 99 hand drawn faces, stays present when it misses. Hold the gear button for the help line. |
 | `Gawa_v9_full_8MB.bin` | No screen flashes mid chat, asks questions it can hear the answers to, reviewed line by line. |
 | `Gawa_v8_full_8MB.bin` | Conversation mode like a smart speaker. |
 | `Gawa_v7_full_8MB.bin` | 22 moods, 24 drawings, talk to Gawa itself. |

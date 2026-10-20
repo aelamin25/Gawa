@@ -288,11 +288,19 @@ static void draw_pet(mood_t mood, int sketch, int variant, int frame, float scal
   g_scale = 1.0f; g_ox = 0; g_oy = 0; g_sketch = -1;
 }
 
-static bool g_chat_dot = false;   // true while Gawa is still listening for a follow-up: a small ear mark top-left
+static bool g_chat_dot = false;   // true while Gawa is listening: a small "(((" ear mark top-left
+static int  g_chat_pulse = 2;     // how many arcs the ear mark shows (1..3): it pulses while you talk
+static bool g_heart = false;      // true for the "I HEARD YOU" moment: a little heart top-right
 
 static void draw_face(mood_t mood, int sketch, int variant, int frame, const char *line, face_px_fn put_pixel) {
   g_px = put_pixel;
   draw_pet(mood, sketch, variant, frame, 1.0f, 0, 0);
   if (line && *line) draw_line_big(line);
-  if (g_chat_dot) { arc(12, 12, 8, 2, 100, 260); arc(12, 12, 4, 2, 100, 260); fill_circle(12, 12, 1); }   // "(((" listening mark
+  if (g_chat_dot) {                                                   // "(((" listening mark
+    fill_circle(12, 12, 1);
+    if (g_chat_pulse >= 1) arc(12, 12, 4, 2, 100, 260);
+    if (g_chat_pulse >= 2) arc(12, 12, 8, 2, 100, 260);
+    if (g_chat_pulse >= 3) arc(12, 12, 12, 2, 100, 260);
+  }
+  if (g_heart) { heart(188, 116); heart(176, 130); }                  // "I heard you": bottom right, clear of the mood extras
 }

@@ -35,6 +35,7 @@ You can also ask it things: "how are you?", "what is your name?", "do you like m
 |---|---|---|
 | `docs/` | The brief, the build diary (`BUILD-LOG.md`), the test sheet, how to use GitHub | Everyone. Start with the build diary. |
 | `releases/` | Ready made files to load onto the board. Use the newest one. | People who want to run Gawa. |
+| `docs/HANDOVER.md` | Where we are and what to build next. Read this first when picking the project back up. | Anyone continuing the work. |
 | `firmware/Gawa/` | The program itself (Arduino). `phrases.h` is what it understands, `faces.h` is how it draws. | People who want to change Gawa. |
 | `artwork/` | The 99 penguin drawings, the original sheets, and preview pictures | Anyone who wants to draw a new face. |
 | `tools/` | `make_sketches.py` turns drawings into something the board can show | People who add drawings. |
@@ -57,7 +58,7 @@ PSRAM OPI, Partition Scheme **Custom**, Erase All Flash **Disabled**. Upload.
 - New sentences: add a word to a list in `phrases.h`. One word teaches a whole family of sentences.
 - New faces: put a PNG in `artwork/sketches/`, add its name to `NAMES` in `tools/make_sketches.py`, run
   `python3 tools/make_sketches.py`, then add `SK_YOURNAME` to a family's face list (the `F_...` lines in `phrases.h`), upload.
-- Stuck? Hold the gear button for one second and Gawa shows the reminder: "SAY HEY GAWA. THEN TELL ME HOW YOU FEEL".
+- No voice? Press the gear button once: it starts a conversation, just like "Hey Gawa". Hold it for a second to see demo moods.
 - Timings (listening window, rest time): the `#define` lines at the top of `Gawa.ino`.
 
 ## The board

@@ -412,6 +412,21 @@ Flash is a budget like everything else: four bits per sample bought us a whole v
 
 ---
 
+## Step 19 – handover for the next chat (20 Oct 2026)
+
+**What we wanted:** to stop here cleanly, so the next chat can start straight away on the brainstorm: how to make Pengu
+fun and not just a kid's toy.
+
+**What we did:** rewrote `docs/HANDOVER.md` with everything: what Pengu is in v13, where every file lives, how to build
+and flash (and why Erase Flash matters now), the four rounds of the voice and how to tune one feeling, what the board
+has told us so far, the loop step by step, the open decisions, and seed ideas for the brainstorm with M's ground rules.
+
+**Did it work:** the file is in the folder and in the project notes.
+
+**So what:** a handover is the cheapest feature we ship. The next chat starts at full speed instead of re-learning.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.

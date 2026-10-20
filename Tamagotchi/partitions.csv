@@ -1,0 +1,9 @@
+# Partition table for the 8 MB flash on the ESP32-S3-ePaper-1.54 (V2).
+# "model" holds the ESP-SR speech models (srmodels.bin, 3.2 MB) and is flashed at 0x410000.
+# Name,     Type, SubType,  Offset,   Size,     Flags
+nvs,        data, nvs,      0x9000,   0x5000,
+otadata,    data, ota,      0xe000,   0x2000,
+app0,       app,  ota_0,    0x10000,  0x400000,
+model,      data, spiffs,   0x410000, 0x330000,
+spiffs,     data, spiffs,   0x740000, 0xA0000,
+coredump,   data, coredump, 0x7F0000, 0x10000,

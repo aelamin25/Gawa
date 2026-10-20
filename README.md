@@ -37,7 +37,7 @@ You can also ask it things: "how are you?", "what is your name?", "do you like m
 | `releases/` | Ready made files to load onto the board. Use the newest one. | People who want to run Pengu. |
 | `docs/HANDOVER.md` | Where we are and what to build next. Read this first when picking the project back up. | Anyone continuing the work. |
 | `firmware/Pengu/` | The program itself (Arduino). `phrases.h` is what it understands, `faces.h` is how it draws. | People who want to change Pengu. |
-| `artwork/` | The 24 penguin drawings (plus 75 spare ones in `extra-75/`), the original sheets, and preview pictures | Anyone who wants to draw a new face. |
+| `artwork/` | The sounds (`sounds/`), the 24 penguin drawings (plus 75 spare ones in `extra-75/`), the original sheets, and preview pictures | Anyone who wants to draw a new face. |
 | `tools/` | `make_sketches.py` turns drawings into something the board can show | People who add drawings. |
 | `extras/` | A parked "cloud brain" version that talks to the internet. Not used right now. | Later. |
 
@@ -61,7 +61,8 @@ PSRAM OPI, Partition Scheme **Custom**, Erase All Flash **Disabled**. Upload.
 - No voice? Press the gear button once: it starts a conversation, just like "Hey Pengu". Hold it for a second to see demo moods.
 - Stuck? Hold the power button for a moment: Pengu restarts from scratch.
 - Pengu asks little questions back ("WANT A HUG?"). Answer "yes" or "no". Yes and no only count right after a question.
-- Timings (listening window, rest time): the `#define` lines at the top of `Pengu.ino`.
+- Timings (listening window, rest time) and the voice volume (`VOICE_VOLUME`, 0 = silent): the `#define` lines at the top of `Pengu.ino`.
+- New sounds: add a word to `WORDS` in `tools/make_sounds.py` (needs `pip install piper-tts` and ffmpeg), run it, upload.
 
 ## The board
 

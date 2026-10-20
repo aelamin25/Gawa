@@ -41,3 +41,15 @@ int audio_mic_read(void *buf, size_t len)
 {
   return esp_codec_dev_read(record, buf, (int)len) == ESP_CODEC_DEV_OK ? 0 : -1;
 }
+
+void audio_play(const int16_t *mono, size_t n, int volume)
+{
+  static int16_t stereo[512];
+  esp_codec_dev_set_out_vol(playback, (float)volume);
+  for (size_t i = 0; i < n; i += 256) {
+    size_t k = (n - i < 256) ? n - i : 256;
+    for (size_t j = 0; j < k; j++) { stereo[2 * j] = mono[i + j]; stereo[2 * j + 1] = mono[i + j]; }
+    esp_codec_dev_write(playback, stereo, (int)(k * 2 * sizeof(int16_t)));
+  }
+  esp_codec_dev_set_out_vol(playback, 0.0);   // quiet again (no speaker hiss between words)
+}

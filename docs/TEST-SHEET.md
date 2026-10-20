@@ -160,3 +160,13 @@ Pass = 8 of 9.
 | 79 | "Hey Pengu" | "(((" mark, "I AM LISTENING" |
 | 80 | "What is your name" | "I AM PENGU, YOUR PENGUIN" |
 | 81 | "Hey Gawa" | Nothing. The old name is gone. |
+
+## Sound test (v12)
+
+| # | Do this | Should happen |
+|---|---|---|
+| 82 | "Hey Pengu" | A little rising blip with "I AM LISTENING" |
+| 83 | "I am sad" | A small "oh" with "OH NO. WANT A HUG?" |
+| 84 | "yes" | A small "big" with "BIG HUG. SQUEEZE" |
+| 85 | Say something it does not know, then wait | The three-note jingle with the heart |
+| 86 | Too loud or too quiet? | Tell me; it is one number (`VOICE_VOLUME`) |

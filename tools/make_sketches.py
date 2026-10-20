@@ -1,7 +1,7 @@
 """
-make_sketches.py - turn drawings into sketches.h for Pengu.
+make_sketches.py - turn drawings into sketches.h for Gawa.
 
-How to use (from the main Pengu folder):
+How to use (from the main Gawa folder):
     python3 tools/make_sketches.py
 
 It looks in the "artwork/sketches" folder for these files and makes firmware/Pengu/sketches.h:
@@ -23,13 +23,14 @@ NAMES = ["happy", "confused", "excited", "angry", "sad", "surprised", "sleepy", 
 # The 75 extra faces cut from the big sheet live in artwork/sketches/extra-75/. They are not compiled in:
 # 24 clear faces that mean something beat 99 that blur together. Add a name here (and copy the PNG up) to use one.
 W, H = 200, 150
+MARGIN = 12       # each drawing is shrunk to leave this many blank pixels around it, so no flipper is cut off at the screen edge
 
 def to_bits(path):
     im = Image.open(path).convert("L")
     im = ImageOps.autocontrast(im, cutoff=1)
     im = im.point(lambda v: 255 if v > 215 else v)
     im = ImageEnhance.Contrast(im).enhance(1.3)
-    im.thumbnail((W, H), Image.LANCZOS)
+    im.thumbnail((W - 2 * MARGIN, H - MARGIN), Image.LANCZOS)   # a little room on the sides and at the top
     canvas = Image.new("L", (W, H), 255)
     canvas.paste(im, ((W - im.width) // 2, (H - im.height) // 2))
     bw = canvas.convert("1")

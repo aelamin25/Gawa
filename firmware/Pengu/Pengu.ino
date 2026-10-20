@@ -43,6 +43,7 @@
 #include "audio_bsp.h"
 #include "faces.h"
 #include "phrases.h"
+#include "sounds.h"
 #include "src/display/epaper_driver_bsp.h"
 #include "src/power/board_power_bsp.h"
 
@@ -57,6 +58,7 @@
 #define BLINK_EVERY_MS      25000    // how often Pengu blinks while resting
 #define SLEEP_AFTER_MS      600000   // falls asleep after 10 quiet minutes
 #define PULSE_MS            500      // the "(((" ear mark pulses while Pengu listens
+#define VOICE_VOLUME        45       // how loud the little penguin words are (0 = silent, 100 = loud)
 
 // ---------------------------------------------------------------- display
 static epaper_driver_display *epd = nullptr;
@@ -78,6 +80,17 @@ static void show(mood_t mood, int sketch, int variant, int frame, const char *li
     epd->EPD_DisplayPart();
     partial_refreshes++;
   }
+}
+
+// say the first word of a line, if Pengu has a little sound for it ("OH NO..." -> "oh", "BIG HUG..." -> "big")
+static void say(const char *line)
+{
+  if (!line || VOICE_VOLUME <= 0) return;
+  char w[12]; int n = 0;
+  for (const char *c = line; *c && n < 11; c++) { if (*c >= 'A' && *c <= 'Z') w[n++] = *c; else if (n) break; }
+  w[n] = 0;
+  for (size_t i = 0; i < sizeof(SOUNDS) / sizeof(SOUNDS[0]); i++)
+    if (strcmp(SOUNDS[i].word, w) == 0) { audio_play(SOUNDS[i].data, SOUNDS[i].n, VOICE_VOLUME); return; }
 }
 
 // play the mood's little animation (4 frames), ending on frame 0
@@ -184,6 +197,7 @@ static void heard_you()
   g_chat_dot = false; g_heart = true;
   state = REACTED; state_until = millis() + MOOD_HOLD_MS;
   strlcpy(cur_text, line, sizeof(cur_text));
+  say("HEART");                                         // the little three-note jingle: I heard you
   show(cur_mood, cur_sketch, cur_var, 0, cur_text);
 }
 
@@ -196,6 +210,7 @@ static void go_listen(const char *line)
   vad_on = false; listen_line = line;
   strlcpy(cur_text, line, sizeof(cur_text));
   show(cur_mood, cur_sketch, cur_var, 0, cur_text);     // same face, ear mark on, "I AM LISTENING"
+  say("LISTEN");                                        // a little rising blip so you know it is listening
   delay(300);                                   // let the tail of "hey pengu" pass before we count talking
   vad_heard_voice = false; vad_on = true;
   state_until = millis() + LISTEN_WINDOW_MS;
@@ -221,6 +236,7 @@ static void react(int command_id)
   g_chat_pulse = 2;
   set_face(fam.mood, sketch, pick_different(FACE_VARIANTS, &last_variant), line);
   said_something = true;
+  say(line);
   switch (fam.mood) {
     case MOOD_SAD: case MOOD_SCARED: case MOOD_NERVOUS: case MOOD_TIRED: case MOOD_GRUMPY: case MOOD_ANGRY: case MOOD_DISGUSTED: cur_tone = TONE_SAD; break;
     case MOOD_HAPPY: case MOOD_PROUD: case MOOD_CONFIDENT: case MOOD_MISCHIEVOUS: case MOOD_SHY: cur_tone = TONE_GOOD; break;
@@ -258,6 +274,7 @@ static void answer(int kind, bool yes)
   Serial.printf("Pengu: %s\n", line);
   awaiting = Q_NONE; retries = 0; g_heart = false; vad_on = false; g_chat_pulse = 2; said_something = true;
   strlcpy(cur_text, line, sizeof(cur_text));
+  say(line);
   g_chat_dot = true;
   if (yes && kind == Q_TELL) {        // "tell me more?" yes: a fresh listening window, same face
     show(cur_mood, cur_sketch, cur_var, 0, cur_text);
@@ -469,6 +486,7 @@ void loop()
     if (!asleep && now - rest_since > SLEEP_AFTER_MS) {
       asleep = true; sleep_frame = 0; last_sleep_frame = now;
       allow_full_refresh = true;                          // falling asleep is the only time a clean (flashing) refresh is allowed
+      say("SLEEP");
       set_face(MOOD_SLEEP, -1, 0, "ZZZ");
       show(MOOD_SLEEP, -1, 0, 0, "ZZZ");
       allow_full_refresh = false;

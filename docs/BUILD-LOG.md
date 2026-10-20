@@ -318,6 +318,37 @@ every document. Older release files keep their old names so the history still ma
 
 ---
 
+## Step 17 – Pengu makes little sounds (20 Oct 2026)
+
+**What we wanted:** a voice, but tiny: "Oh" for "OH NO. WANT A HUG?", "Big" for "BIG HUG. SQUEEZE". Cute, quiet,
+penguin-ish, and in the spirit of 90s handheld games.
+
+**What we did:**
+- `tools/make_sounds.py` makes 14 little words with a free offline voice (piper, the soft "amy" voice), raises the
+  pitch a little WITHOUT speeding them up (the first try did both and sounded like a hamster on fast-forward: M said
+  "way too fast"), slows them to 85 percent, mixes in a light 8-bit texture like a Game Boy, rolls off the top, and keeps
+  them at about -13 dB. Each word is now half a second to a second long. Plus three pure chiptune blips, made from soft
+  triangle waves rather than harsh squares: a rising "listen" blip when Pengu starts listening, a three-note jingle for
+  the heart moment, and a falling blip when it falls asleep. All of it lives in `firmware/Pengu/sounds.h` (about 150 KB) and plays through the
+  board's own speaker. You can listen to every clip in `artwork/sounds/`.
+- The rule is simple: Pengu plays the clip that matches the first word of what it says. "OH NO..." plays "oh",
+  "SORRY IT WAS BAD..." plays "sorry", "NIGHT NIGHT" plays "night". A reply that starts with another word is silent.
+- The speaker is muted between words so there is no hiss. Volume is one number at the top of `Pengu.ino`
+  (`VOICE_VOLUME`, 45 of 100).
+
+- Also in this build: every drawing is shrunk a little inside its 200 by 150 box (12 pixels of air on each side), because
+  M's photo showed the happy penguin's flippers cut off at the screen edge. Nothing touches the edge now.
+
+**Did it work:** compiles; a PC check lists which of the 226 lines get a sound (42 do, each with the right word) and the
+longest clip (1.2 s). Measured every clip: peaks between -13 and -15 dB, nothing clipped. The speaker has never been used
+before on this board, so the first flash will tell. If it is silent, the thing to check is the codec's playback volume and
+the amplifier pin (GPIO 46, handled by the Waveshare code).
+
+**So what:** sound is the cheapest way to make a thing feel alive. One syllable in the right place does more than a
+paragraph on the screen.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.

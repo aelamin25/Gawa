@@ -14,6 +14,9 @@ void audio_bsp_init(void);
 // Reads raw stereo 16-bit frames from the microphone. Returns 0 on success.
 int audio_mic_read(void *buf, size_t len);
 
+// Plays a short 16 kHz 16-bit mono clip on the speaker (blocks until done), at 0..100 volume.
+void audio_play(const int16_t *mono, size_t n, int volume);
+
 #ifdef __cplusplus
 }
 #endif

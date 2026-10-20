@@ -4,7 +4,7 @@ Ready made files to load onto the board. Always use the newest one. Steps are in
 
 | File | What it does |
 |---|---|
-| `Gawa_v9_full_8MB.bin` | **Newest.** Conversation mode, 22 moods, no screen flashes mid chat, asks questions it can hear the answers to. |
+| `Gawa_v9_full_8MB.bin` | **Newest.** Conversation mode, 22 moods, no screen flashes mid chat, asks questions it can hear the answers to, reviewed line by line before release. |
 | `Gawa_v8_full_8MB.bin` | Conversation mode like a smart speaker. |
 | `Gawa_v7_full_8MB.bin` | 22 moods, 24 drawings, talk to Gawa itself. |
 | `Gawa_v6_full_8MB.bin` | First version with the pencil sketch faces (8 of them). |

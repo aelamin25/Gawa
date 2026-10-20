@@ -1,20 +1,19 @@
 /*
- * Gawa v9 - a pencil-sketch penguin you can have a conversation with
+ * Gawa v9 - a pencil-sketch penguin you can have a conversation with (Waveshare ESP32-S3-ePaper-1.54, V2)
  *
  * Conversation works like a smart speaker: say "Hey Gawa" once to start. After each reply Gawa keeps
  * listening for about 10 seconds, so you can just keep talking. The conversation ends after 10 seconds
  * of silence, or when you say "thank you", "stop", "that is all" or "good night". Then it is "Hey Gawa" again.
- * A sentence with its name in it ("hey gawa how are you", "thank you gawa") starts a conversation by itself., for the Waveshare ESP32-S3-ePaper-1.54 (V2)
+ * A sentence with its name in it ("hey gawa how are you", "thank you gawa") starts a conversation by itself.
  *
- *   "Hey Gawa"                      -> ears up, Gawa listens for about 10 seconds
- *   "my dog died" / "my gran is ill" -> sad face, "SO SORRY ABOUT YOUR DOG"
- *   "I passed my driving test"       -> happy face, "YOU PASSED YOUR DRIVING TEST!"
- *   "I am thinking about work"       -> thoughtful face, "HMM, WORK. GO ON"
- *   mumble something it does not know -> puzzled face, "SORRY, SAY THAT AGAIN?" and it listens again
- *   say nothing                      -> "I AM HERE WHEN YOU NEED ME" and it rests
+ *   "my dog died" / "my gran is sick"   -> sad face, "SO SORRY ABOUT YOUR DOG"
+ *   "I passed my driving test"          -> proud face, "YOU PASSED YOUR DRIVING TEST!"
+ *   "how are you"                       -> "GREAT! HOW WAS YOUR DAY? GOOD OR BAD?"  then "pretty good" / "not great" work
+ *   mumble something it does not know   -> curious face, "MY EARS! ONE MORE TIME?"
+ *   say nothing after "Hey Gawa"        -> "I AM HERE WHEN YOU NEED ME" and it rests
  *
- * Everything runs on the chip. Phrase patterns and replies live in phrases.h, faces in faces.h.
- * Gear (BOOT) button: short press steps through the moods by hand.
+ * Everything runs on the chip. Phrase patterns and replies live in phrases.h, faces in faces.h, drawings in sketches.h.
+ * Gear (BOOT) button: short press steps through some moods by hand.
  */
 
 #include <Arduino.h>
@@ -33,7 +32,7 @@
 #define UNHEARD_WAIT_MS     2500     // you spoke, nothing matched: how long to wait before "say that again?"
 #define MAX_RETRIES         2        // how many "say that again?" before it gives up politely
 #define MOOD_HOLD_MS        120000   // a reaction stays on screen this long, then Gawa rests (2 minutes)
-#define FULL_REFRESH_EVERY  10       // every Nth screen update is a full (flashing) refresh to clear ghosting
+#define FULL_REFRESH_EVERY  10       // once 10 quick updates have happened, the next resting redraw is a full (flashing) clean refresh
 #define FRAME_MS            320      // time between animation frames
 #define BLINK_EVERY_MS      25000    // how often Gawa blinks while resting
 #define SLEEP_AFTER_MS      600000   // falls asleep after 10 quiet minutes
@@ -47,10 +46,10 @@ static bool allow_full_refresh = false;   // the flashing clean refresh only hap
 
 static void put_black_pixel(int x, int y) { epd->EPD_DrawColorPixel(x, y, DRIVER_COLOR_BLACK); }
 
-static mood_t last_mood = MOOD_IDLE; static int last_var = 0; static const char *last_text = "";
+static mood_t last_mood = MOOD_IDLE; static int last_var = 0; static char last_text[64] = "";
 static void show(mood_t mood, int variant, int frame, const char *line)
 {
-  last_mood = mood; last_var = variant; last_text = line;
+  last_mood = mood; last_var = variant; strlcpy(last_text, line ? line : "", sizeof(last_text));
   epd->EPD_Clear();
   draw_face(mood, variant, frame, line, put_black_pixel);
   if (allow_full_refresh && partial_refreshes >= FULL_REFRESH_EVERY) {
@@ -81,7 +80,6 @@ static void display_init()
 
 // ---------------------------------------------------------------- build the sentence list from the families
 static sr_cmd_t *all_phrases = nullptr;
-static bool     *phrase_has_name = nullptr;   // sentence contains "gawa": it can start a conversation by itself
 static size_t    phrase_count = 0;
 
 static void build_phrases()
@@ -89,7 +87,8 @@ static void build_phrases()
   size_t total = 0;
   for (size_t f = 0; f < FAMILY_COUNT; f++) total += FAMILIES[f].ntopics * FAMILIES[f].nendings;
   all_phrases = (sr_cmd_t *)heap_caps_calloc(total, sizeof(sr_cmd_t), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-  phrase_has_name = (bool *)heap_caps_calloc(total, sizeof(bool), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+  if (!all_phrases) { Serial.println("Out of memory for phrases"); while (true) delay(1000); }
+  if (total > 400) Serial.printf("WARNING: %u sentences, the chip only holds 400\n", (unsigned)total);
   phrase_count = 0;
   for (size_t f = 0; f < FAMILY_COUNT; f++) {
     const Family &fam = FAMILIES[f];
@@ -98,7 +97,6 @@ static void build_phrases()
         sr_cmd_t &c = all_phrases[phrase_count++];
         c.command_id = CMD_ID(f, t);
         snprintf(c.str, sizeof(c.str), "%s%s%s", fam.prefix, fam.topics[t], fam.endings[e]);
-        phrase_has_name[phrase_count - 1] = strstr(c.str, "gawa") != nullptr;
       }
   }
   Serial.printf("Gawa knows %u sentences from %u patterns\n", (unsigned)phrase_count, (unsigned)FAMILY_COUNT);
@@ -112,10 +110,11 @@ static int      retries = 0;
 static uint32_t rest_since = 0, last_blink = 0, last_tilt = 0, last_sleep_frame = 0;
 static int      sleep_frame = 0, tilt_frame = 0;
 static bool     asleep = false;
-static bool     in_chat = false;
-static bool     follow_up = false;      // listening for a follow-up after a reply (the reply face stays on screen)        // a conversation is open: no "Hey Gawa" needed for the next thing you say
+static bool     in_chat = false;        // a conversation is open: no "Hey Gawa" needed for the next thing you say
+static bool     follow_up = false;      // listening for a follow-up after a reply (the reply face stays on screen)
 static const char *rest_line = "", *listen_line = "";
 static int      last_variant = -1, last_line = -1;
+static mood_t   reply_mood = MOOD_IDLE; static int reply_var = 0; static char reply_text[64] = "";   // the last real reply
 static volatile int voice_cmd = -1, voice_phrase = -1;     // set by the speech callback
 
 // "did they talk?" detector, fed by the microphone callback
@@ -145,11 +144,13 @@ static void go_rest(const char *line)
 static void go_listen(const char *line)
 {
   g_chat_dot = false;
-  state = LISTENING; asleep = false; in_chat = true; follow_up = false;
-  state_until = millis() + LISTEN_WINDOW_MS;
-  vad_heard_voice = false; vad_on = true; listen_line = line;
+  state = LISTENING; asleep = false; in_chat = true; follow_up = false; retries = 0;
+  vad_on = false; listen_line = line;
   show(MOOD_LISTENING, 0, 1, line); delay(FRAME_MS);
   show(MOOD_LISTENING, 0, 0, line);
+  delay(300);                                   // let the tail of "hey gawa" pass before we count talking
+  vad_heard_voice = false; vad_on = true;
+  state_until = millis() + LISTEN_WINDOW_MS;
   last_tilt = millis(); tilt_frame = 0;
 }
 
@@ -158,17 +159,23 @@ static void react(int command_id)
   int f = CMD_FAMILY(command_id), t = CMD_TOPIC(command_id);
   if (f < 0 || f >= (int)FAMILY_COUNT) return;
   const Family &fam = FAMILIES[f];
+  if (t < 0 || t >= fam.ntopics) return;
   const char *tmpl = fam.replies[pick_different(fam.nreplies, &last_line)];
   char line[64];
   snprintf(line, sizeof(line), tmpl, fam.topics[t]);      // %s -> the word it heard (if the reply has one)
   Serial.printf("Gawa: %s\n", line);
   g_chat_dot = !fam.ends_chat;        // show the little listening mark while the chat stays open
-  play(fam.mood, pick_different(FACE_VARIANTS, &last_variant), line);
+  vad_on = false;                     // while the animation plays, nothing counts as talking
+  reply_mood = fam.mood; reply_var = pick_different(FACE_VARIANTS, &last_variant); strlcpy(reply_text, line, sizeof(reply_text));
+  play(reply_mood, reply_var, reply_text);
   retries = 0;
   if (fam.ends_chat) {                // "thank you", "stop", "good night": the conversation is over
-    in_chat = false; follow_up = false;
-    state = REACTED; state_until = millis() + MOOD_HOLD_MS;
-    vad_on = false;
+    in_chat = false; follow_up = false; vad_on = false;
+    if (fam.mood == MOOD_SLEEP) {     // "good night": straight to sleep
+      state = RESTING; asleep = true; rest_since = last_sleep_frame = millis(); sleep_frame = 0; rest_line = "ZZZ";
+    } else {
+      state = REACTED; state_until = millis() + MOOD_HOLD_MS;
+    }
   } else {                            // keep the chat open: listen for a follow-up, reply face stays on screen
     in_chat = true; follow_up = true;
     state = LISTENING;
@@ -198,8 +205,10 @@ static esp_err_t mic_fill(void *arg, void *out, size_t len, size_t *bytes_read, 
   *bytes_read = len;
 
   float level = (float)((pick ? energy_r : energy_l) / (int64_t)frames);
-  if (!vad_on) noise_floor = noise_floor * 0.98f + level * 0.02f;     // learn how loud the room is
-  else {
+  if (!vad_on) {
+    noise_floor = noise_floor * 0.98f + level * 0.02f;          // learn how loud the room is
+  } else {
+    noise_floor = noise_floor * 0.998f + level * 0.002f;        // while listening, learn very slowly (a fan or TV must not jam us)
     float threshold = noise_floor * 3.0f; if (threshold < 350) threshold = 350;
     if (level > threshold) { vad_last_voice_ms = millis(); vad_heard_voice = true; }
   }
@@ -208,7 +217,7 @@ static esp_err_t mic_fill(void *arg, void *out, size_t len, size_t *bytes_read, 
 
 static void on_voice_event(void *arg, sr_event_t event, int command_id, int phrase_id)
 {
-  if (event == SR_EVENT_COMMAND) { voice_cmd = command_id; voice_phrase = phrase_id; }
+  if (event == SR_EVENT_COMMAND) { voice_phrase = phrase_id; voice_cmd = command_id; }   // cmd last: loop() reads it first
   sr_set_mode(SR_MODE_COMMAND);       // always keep listening
 }
 
@@ -217,7 +226,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(300);
-  Serial.println("\nGawa v4 starting...");
+  Serial.println("\nGawa v9 starting...");
   randomSeed(esp_random());
   pinMode(BOOT_BUTTON_PIN, INPUT_PULLUP);
 
@@ -249,8 +258,11 @@ void loop()
   bool pressed = digitalRead(BOOT_BUTTON_PIN) == LOW;
   if (pressed && !was_pressed) {
     static int step = 0;
-    const int demo[10] = { CMD_ID(1, 0), CMD_ID(15, 2), CMD_ID(11, 0), CMD_ID(27, 0), CMD_ID(29, 0), CMD_ID(31, 0), CMD_ID(46, 0), CMD_ID(50, 0), CMD_ID(48, 0), CMD_ID(43, 0) };
-    react(demo[step]); step = (step + 1) % 10;   // how are you / passed test / cat died / angry / scared / grumpy / nervous / shy / tired / shocked
+    const char **demo[10] = { T_HOWRU, T_TESTS, T_LOVED, T_ANGRY, T_SCARED, T_GRUMPY, T_NERVOUS, T_SHY, T_TIRED, T_SHOCKED };
+    int fam = family_of(demo[step]);
+    if (demo[step] == T_TESTS) fam = family_of(T_TESTS) + 1;      // T_TESTS is used twice: failed (first) and passed (second)
+    if (fam >= 0) react(CMD_ID(fam, 0));
+    step = (step + 1) % 10;
   }
   was_pressed = pressed;
 
@@ -259,7 +271,9 @@ void loop()
     int cmd = voice_cmd, ph = voice_phrase; voice_cmd = -1;
     Serial.printf("Heard: \"%s\"\n", (ph >= 0 && ph < (int)phrase_count) ? all_phrases[ph].str : "?");
     int fam = CMD_FAMILY(cmd);
-    bool has_name = (ph >= 0 && ph < (int)phrase_count) ? phrase_has_name[ph] : false;
+    bool has_name = false;
+    if (fam >= 0 && fam < (int)FAMILY_COUNT && CMD_TOPIC(cmd) < FAMILIES[fam].ntopics)
+      has_name = strstr(FAMILIES[fam].prefix, "gawa") || strstr(FAMILIES[fam].topics[CMD_TOPIC(cmd)], "gawa");
     if (fam == FAMILY_WAKE) {
       go_listen(R_LISTEN[pick_different(N(R_LISTEN), &last_line)]);
     } else if (in_chat || has_name) {
@@ -271,25 +285,32 @@ void loop()
 
   // ---- while listening: did they talk but nothing matched? did they say nothing at all?
   if (state == LISTENING) {
-    if (vad_heard_voice && now - vad_last_voice_ms > UNHEARD_WAIT_MS) {
-      if (retries < MAX_RETRIES) {
+    bool window_over = (int32_t)(now - state_until) >= 0;
+    if (vad_heard_voice && (now - vad_last_voice_ms > UNHEARD_WAIT_MS || window_over)) {
+      if (retries < (follow_up ? 1 : MAX_RETRIES)) {
         retries++;
         Serial.println("Talked, but no match -> asking again");
-        state_until = now + LISTEN_WINDOW_MS;
-        vad_heard_voice = false;
         listen_line = R_DIDNT_HEAR[pick_different(N(R_DIDNT_HEAR), &last_line)];
-        play(MOOD_CURIOUS, 0, listen_line);     // magnifying glass: "let me listen harder"
+        vad_on = false;                          // do not count our own animation time as talking
+        play(MOOD_CURIOUS, 0, listen_line);      // curious face: "let me listen harder"
+        vad_heard_voice = false; vad_on = true;
+        state_until = millis() + LISTEN_WINDOW_MS;
         last_tilt = millis();
+      } else if (follow_up) {
+        Serial.println("Follow-up not understood twice -> quietly closing the chat");
+        in_chat = false; follow_up = false; vad_on = false; retries = 0;
+        state = REACTED; state_until = now + MOOD_HOLD_MS;
+        g_chat_dot = false; show(MOOD_IDLE, 0, 0, R_GIVE_UP[pick_different(N(R_GIVE_UP), &last_line)]);
       } else {
         Serial.println("Still no match -> giving up politely");
-        go_rest(R_GIVE_UP[pick_different(N(R_GIVE_UP), &last_line)]);   // go_rest closes the conversation (calm face, not a telling off)
+        go_rest(R_GIVE_UP[pick_different(N(R_GIVE_UP), &last_line)]);   // calm face, not a telling off
       }
-    } else if (!vad_heard_voice && (int32_t)(now - state_until) >= 0) {
+    } else if (!vad_heard_voice && window_over) {
       if (follow_up) {                      // 10 s of quiet after a reply: the conversation ends, face stays up
         Serial.println("Quiet -> conversation over");
         in_chat = false; follow_up = false; vad_on = false;
         state = REACTED; state_until = now + MOOD_HOLD_MS;
-        g_chat_dot = false; show(last_mood, last_var, 0, last_text);   // same face, listening mark gone
+        g_chat_dot = false; show(reply_mood, reply_var, 0, reply_text);   // the reply face again, listening mark gone
       } else {
         Serial.println("Nothing said -> resting");
         go_rest(R_NOTHING[pick_different(N(R_NOTHING), &last_line)]);
@@ -308,10 +329,11 @@ void loop()
 
   // ---- resting: blink sometimes, fall asleep after a long quiet spell
   if (state == RESTING) {
+    allow_full_refresh = true;                            // resting is the only time a clean (flashing) refresh is allowed
     if (!asleep && now - rest_since > SLEEP_AFTER_MS) {
       asleep = true; sleep_frame = 0; last_sleep_frame = now;
       show(MOOD_SLEEP, 0, 0, "ZZZ");
-    } else if (asleep && now - last_sleep_frame > 30000) {
+    } else if (asleep && now - last_sleep_frame > 60000) {
       last_sleep_frame = now; sleep_frame = (sleep_frame + 1) % ANIM_FRAMES;
       show(MOOD_SLEEP, 0, sleep_frame, "ZZZ");
     } else if (!asleep && now - last_blink > BLINK_EVERY_MS) {
@@ -319,6 +341,7 @@ void loop()
       show(MOOD_IDLE, 0, 2, rest_line); delay(250);      // a tiny breath
       show(MOOD_IDLE, 0, 0, rest_line);
     }
+    allow_full_refresh = false;
   }
 
   delay(20);

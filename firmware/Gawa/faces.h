@@ -2,7 +2,7 @@
 // Pure C/C++ so it can also be compiled on a PC to preview the 200x200 image.
 //
 //   draw_face(mood, variant, frame, line, put_pixel)
-//     mood    : MOOD_IDLE, MOOD_LISTENING, MOOD_HAPPY, MOOD_SAD, MOOD_THINKING, MOOD_SLEEP
+//     mood    : one of the 22 moods in mood_t below (MOOD_IDLE, MOOD_HAPPY, MOOD_SAD, MOOD_SCARED, ...)
 //     variant : 0..FACE_VARIANTS-1, a different expression for the same mood
 //     frame   : 0..ANIM_FRAMES-1, one step of that mood's little animation
 //     line    : up to 3 rows of big text under the penguin (or NULL)

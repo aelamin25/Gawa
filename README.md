@@ -21,9 +21,9 @@ It runs on a small board with a microphone and a black and white screen, with no
 2. Say your thing. "I passed my driving test." "My cat is sick." "I am so tired."
 3. It makes a face and answers. "YOU PASSED YOUR DRIVING TEST!" "SO SORRY ABOUT YOUR CAT." "REST, FRIEND."
 4. Keep talking. For ten seconds after every answer it keeps listening (a little "(((" mark shows).
-5. Say "thank you", "stop" or "good night" to finish. Or just go quiet.
+5. Say "thank you", "okay stop", "that is all" or "good night" to finish. Or just go quiet.
 
-It understands about 400 sentences built from 55 patterns, and it has 22 moods drawn by hand.
+It understands 387 sentences built from 55 patterns, and it has 22 moods drawn by hand.
 You can also ask it things: "how are you?", "what is your name?", "do you like me?", "tell me a joke".
 
 ## What is in this folder

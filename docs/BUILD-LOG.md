@@ -166,10 +166,16 @@ close it. Then it is "Hey Gawa" again. 52 patterns, 397 sentences.
 - Tidied the whole folder for GitHub: `docs/` (diary, brief, tests), `firmware/Gawa/` (the program),
   `releases/` (files to load), `artwork/` (drawings), `tools/`, `extras/`. The README now explains Gawa like you are nine.
 
-**Did it work:** compiles, 398 sentences from 55 patterns. Waiting for the next video.
+**Then we grilled it before loading.** A second reviewer read every line without knowing what we expected, and found ten
+gaps. The big ones: a reply text that could turn to rubbish after ten seconds (a pointer to memory that had been reused);
+the gear button demo pointing at the wrong moods; single word phrases like "good", "stop" and "gawa" that the chip would
+mishear from normal talk; a fan or TV that could keep Gawa "listening" forever; and eleven reply lines that quietly broke
+our own rule by giving advice ("deep breath", "one step at a time", "rest now"). All fixed. 387 sentences from 55 patterns.
 
-**So what:** a companion that asks a question it cannot understand the answer to is a trap. Now every question Gawa asks
-has answers it knows. And anyone landing on GitHub can find their way around.
+**Did it work:** compiles and previews. Waiting for the next video.
+
+**So what:** a companion that asks a question it cannot understand the answer to is a trap, so now every question Gawa
+asks has answers it knows. And reviewing before loading caught a crash that a test video would have shown us the hard way.
 
 ---
 

@@ -61,6 +61,7 @@ Score: ____ / 30      Date: ________      Notes on anything weird:
 2. Say "I passed my driving test". Proud face. A small "(((" mark top left means it is still listening.
 3. Without saying Hey Gawa, say "and I got the job". Happy face. Still listening.
 4. Say "thank you". Grateful face, the "(((" mark goes away. Conversation over.
+   (To stop without thanking: "okay stop", "that is all" or "bye gawa". A bare "stop" no longer counts.)
 5. Say "I am sad" with no Hey Gawa. Nothing should happen. That is correct.
 6. Say "hey gawa how are you" in one breath. It should answer straight away.
 
@@ -69,6 +70,13 @@ Pass = all six behave as written.
 ## Day question test (v9)
 
 1. Say "Hey Gawa, how are you". It should answer and ask "GOOD OR BAD?".
-2. Say "pretty good". Happy face, "YAY! GLAD IT WAS GOOD".
-3. Say "Hey Gawa, how are you", then mumble nonsense. Magnifying glass face, "MY EARS! ONE MORE TIME?". No black flash.
+2. Say "pretty good". Happy face, "YAY! GLAD IT WAS GOOD". (Single words like "good" no longer count: say "it was good" or "pretty good".)
+3. Say "Hey Gawa, how are you", then mumble nonsense. Curious face, "MY EARS! ONE MORE TIME?". No black flash.
 4. Say "not great". Sad face, "OH NO. BIG HUG".
+
+## Leave-it-alone test (v9)
+
+1. Say "Hey Gawa" and then say nothing. After 10 seconds: "I AM HERE WHEN YOU NEED ME".
+2. Say "Hey Gawa" with the TV or music on, and say nothing. It must still give up after 10 seconds, not listen forever.
+3. Say "Hey Gawa, how are you", answer "it was good", then say nothing for 10 seconds. The happy face stays, the "(((" mark goes.
+4. Say "good night gawa". Sleepy face straight away, no two minute wait.

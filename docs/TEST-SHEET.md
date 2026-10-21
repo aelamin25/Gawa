@@ -179,3 +179,23 @@ Pass = 8 of 9.
 | 88 | Press the gear and say "I am sad" straight away, finger still on the button | Pengu says "I am listening", then sad face and it says "oh no. want a hug?" as the words appear |
 | 89 | Say "yes" | Heart-eyes face, it says "big hug. squeeze" |
 | 90 | Look at the top right corner after it speaks | A tiny "S0". If it says anything else (S3, S-3...), photograph it and send it |
+
+## Chinese pipe test (v14a)
+
+Flash first: Erase Flash, then `releases/Pengu_v14a_full_8MB.bin` at address 0x0. Film it with the phone's transcript on.
+
+| # | Do this | Should happen |
+|---|---|---|
+| 91 | Plug in after flashing | WAKING UP..., then JOIN WIFI PENGU-SETUP |
+| 92 | On your phone, join the Wi-Fi "Pengu-Setup". Fill in Wi-Fi, password, OpenAI key; voice "marin". Save | The page says Saved!, Pengu restarts, FINDING WIFI..., then PRESS THE GEAR |
+| 93 | Press the gear | 喂？ (wéi?), then within about 3 s Pengu says 你好！ and shows 你好！ big |
+| 94 | Just watch | The words under Pengu fade: 你好！ → nǐ hǎo! → Hello! → round again. The "(((" mark top left = your turn |
+| 95 | Say 你好 | Pengu answers in about 2 s with something tiny (我是Pengu。) |
+| 96 | Say 什么? (shén me, "what?") | It says it again, slower or simpler |
+| 97 | Say "thank you" in English | It says 谢谢！ for you to copy |
+| 98 | Five turns in a row, then say 再见 (zài jiàn) | 再见！, then after 20 s of quiet: ZAI JIAN! BYE! |
+| 99 | Start a call, and press the gear while Pengu talks | It stops at once: ZAI JIAN! BYE! |
+| 100 | Hold the gear 3 s, pick another voice, save, call again | Which voice sounds most like Pengu? Tell me |
+
+If a word appears instead (BAD KEY, NO CREDIT?, MODEL?, NO INTERNET -1, LINK LOST, NO ANSWER, NO FONT), photograph
+it. Even better: the flasher page has a Console tab (115200). Copy what it prints while you press the gear and send it.

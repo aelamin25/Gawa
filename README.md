@@ -29,6 +29,21 @@ and "today was pretty bad" all get the sad face. It knows 399 chunks in 66 feeli
 catches nothing, it says "MM HMM. GO ON" and keeps listening, so you never feel ignored.
 You can also ask it things: "how are you?", "what is your name?", "do you like me?", "tell me a joke".
 
+## New: Chinese Pengu (v14a, pipe test)
+
+Pengu is becoming a little Chinese teacher: a penguin from Harbin you talk to in Mandarin. This first step needs Wi-Fi and
+an OpenAI key.
+
+1. **Flash.** Erase Flash, then `releases/Pengu_v14a_full_8MB.bin` at 0x0 (same flasher as below).
+2. **Set it up from your phone.** Join the Wi-Fi "Pengu-Setup" and fill in your home Wi-Fi, the key and a voice.
+3. **Talk.** Press the gear: Pengu says 你好！ Talk back in Chinese (or English if you are stuck). The words under Pengu
+   take turns: characters, then pinyin, then English.
+4. **Hang up.** Press the gear again, or say 再见.
+5. **Change settings.** Hold the gear for 3 seconds to get the setup page back.
+
+The code is in `firmware/PenguCN/`, and the design is in `docs/superpowers/specs/`. The feelings Pengu (v13) is still in
+`firmware/Pengu/`.
+
 ## What is in this folder
 
 | Folder | What is inside | Who it is for |

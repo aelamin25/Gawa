@@ -1,0 +1,10 @@
+# Partition table for the 8 MB flash on the ESP32-S3-ePaper-1.54 (V2).
+# app0   = the program (Pengu.ino and friends)
+# model  = the ESP-SR speech models (not used by v14a; kept so v14 can bring back "Hey Pengu")
+# font   = the Chinese + pinyin font (build/font.bin, made by tools/make_font.py), flashed at 0x620000
+# Name,     Type, SubType,  Offset,   Size,     Flags
+nvs,        data, nvs,      0x9000,   0x5000,
+otadata,    data, ota,      0xe000,   0x2000,
+app0,       app,  ota_0,    0x10000,  0x2E0000,
+model,      data, spiffs,   0x2F0000, 0x330000,
+font,       data, 0x40,     0x620000, 0x1E0000,

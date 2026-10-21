@@ -427,6 +427,41 @@ has told us so far, the loop step by step, the open decisions, and seed ideas fo
 
 ---
 
+## Step 20 – v14a: Pengu speaks Chinese (21 Oct 2026)
+
+**What we wanted:** to pivot Pengu into a Chinese teacher for M, who is a beginner. The full design is in
+`docs/superpowers/specs/2026-10-21-chinese-pengu-design.md`. The first step is a "pipe test": press the gear, speak
+Chinese, Pengu answers out loud in Chinese, and the screen shows it clearly.
+
+**What we did:**
+- **A new sketch, `firmware/PenguCN/`.** The v13 feelings Pengu stays untouched in `firmware/Pengu/`.
+- **Pengu goes online.** It uses OpenAI's live voice (Realtime API) over a secure WebSocket, straight from the board.
+  The key and Wi-Fi go in through a "Pengu-Setup" page on the phone (hold the gear 3 s).
+- **It can't hear itself.** The mic is muted while Pengu talks.
+- **The Chinese font** (`tools/make_font.py`) covers the 3,755 most common characters, in a flash partition at
+  0x620000. Characters are 36 px when they fit, pinyin and English 26 px.
+- **The screen keeps Pengu big.** One strip underneath fades from the characters to the pinyin to the English and back.
+  The pinyin + English come from a second, text-only request after each reply.
+- **Pengu starts super basic:** replies of 2 to 6 characters and about 20 words, building up 你好 → 我是Pengu →
+  你好吗 → 你叫什么名字 → 谢谢 → 你喜欢鱼吗 → 再见.
+- **Tests on the PC:** the font (`test_cnfont`), the cloud messages (`test_rt_proto`), and the screens rendered to
+  pictures (`preview_cn`, see `artwork/previews/v14a-screens.png`).
+- **A fresh reviewer read the board code against the IDF source.** It found one critical bug: a quirk in IDF's
+  WebSocket reader where a server ping could break the call. It also found 7 important ones, including a TLS memory leak
+  per call, a bad key showing as "LINK LOST", and missed gear clicks during screen updates. All fixed before release.
+
+**Did it work:**
+- It compiles: 1.3 MB program, 1.05 MB font. `releases/Pengu_v14a_full_8MB.bin`.
+- All PC tests pass.
+- The board has not run it yet. The two things only hardware can tell us:
+  - does the speaker play at 24 kHz?
+  - do OpenAI's reply headers fit IDF's 1 KB buffer?
+
+**So what:** the hard part (hearing, speaking and showing Chinese, live) now sits in one small, tested pipe. Lessons,
+the house and memory are just what we ask the cloud to say, on top of it.
+
+---
+
 ## How to add the next entry
 
 Copy the shape above: **What we wanted**, **What we did**, **Did it work**, **So what**. Say what broke too; that is the useful part.
